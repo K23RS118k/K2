@@ -1,0 +1,35 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "${workspaceFolder}",
+                "C:/cygwin64/hrp2/include",
+                "C:/cygwin64/hrp2/sdk/common/ev3api",
+                "C:/cygwin64/hrp2/sdk/common/ev3api/include",
+                "C:/cygwin64/hrp2/target/ev3_gcc",
+                "C:/cygwin64/hrp2/arch/arm_gcc/am1808",
+                "C:/cygwin64/hrp2/arch",
+                "C:/cygwin64/hrp2/arch/arm_gcc/common",
+                "C:/cygwin64/hrp2/sdk/OBJ",
+                "C:/cygwin64/hrp2/base-workspace/OBJ",
+                "C:/cygwin64/hrp2/sdk/common/library/libcpp-ev3/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "msvc-x64"
+        }
+    ],
+    "version": 4
+}
