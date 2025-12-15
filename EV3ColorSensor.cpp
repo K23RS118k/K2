@@ -51,7 +51,7 @@ double EV3ColorSensor::getColorBrightness()
     saturation = Saturation * 100;
     brightness = Brightness;
  
-    //syslog(LOG_NOTICE, "%d,%d,%d,%d,%d,%d", (int16_t)hue,  (int16_t)saturation,  (int16_t)rgb_brightness, (int16_t)rgb.r, (int16_t)rgb.g, (int16_t)rgb.b);
+    syslog(LOG_NOTICE, "%d,%d,%d,%d,%d,%d", (int16_t)hue,  (int16_t)saturation,  (int16_t)rgb_brightness, (int16_t)rgb.r, (int16_t)rgb.g, (int16_t)rgb.b);
     return rgb_brightness;
 }
  
@@ -81,9 +81,9 @@ void EV3ColorSensor::getEncodeHSV()
         Saturation /= max;
     Brightness = max;
  
-    log1 = Hue * 100;
-    log2 = Saturation * 100;
-    log3 = Brightness * 100;
+    hue = Hue * 100;
+    saturation = Saturation * 100;
+    brightness = Brightness * 100;
    
     // BluetoothLogger::dataLogger(1, 1, (int16_t)rgb.r, (int16_t)rgb.g, (int16_t)rgb.b, (int16_t)(rgb_brightness * 100));
     // BluetoothLogger::dataLogger((int16_t)1, (int16_t)1, (int16_t)1, (int16_t)log1, (int16_t)log2, 1);

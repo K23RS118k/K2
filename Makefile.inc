@@ -23,6 +23,8 @@ APPL_CXXOBJS +=	BluetoothLogger.o \
 				DecelerationRotaryAction.o \
 				Calibration.o \
 				IPCommunication.o \
+				FaceDisplay.o \
+				Music.o \
 				
 				
 

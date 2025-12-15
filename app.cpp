@@ -46,6 +46,8 @@ void *__dso_handle = 0;
 #include "BlockLineUpSearch.h"
 //#include "BlockBingo.h"
 #include "etroboc_ext.h"
+#include "FaceDisplay.h"
+#include "Music.h"
 
 #define DEBUG
 
@@ -101,6 +103,8 @@ static StraightDetection *gStraightDetection;
 static RunParameter *gRunParameter;
 static SpeedAdjustment *gSpeedAdjustment;
 static EV3SonarSensor *gEV3SonarSensor;
+static FaceDisplay *gFaceDisplay;
+static Music *gMusic;
 static SectionControlTactics *gSectionControlTactics;
 static LineTraceAction *gLineTraceAction;
 static EdgeChangeAction *gEdgeChangeAction;
@@ -127,6 +131,8 @@ static void user_system_create()
 	gTimerJudgement = new TimerJudgement(gClock);
 	gEV3ColorSensor = new EV3ColorSensor(gColorSensor);
 	gEV3SonarSensor = new EV3SonarSensor(gSonarSensor);
+	gFaceDisplay = new FaceDisplay();
+	gMusic = new Music();
 	gRearMotor = new RearMotor(gLeftWheel, gRightWheel);
 	gArmControl = new ArmControl(gArmMotor, gTimerJudgement);
 	gCalcCurrentLocation = new CalcCurrentLocation(gRearMotor);
@@ -153,7 +159,7 @@ static void user_system_create()
 	//Actionクラスに参照を設定する
 	Action::setObject(gRunParameter, gRearMotor, gArmControl, gEV3ColorSensor, gCalcCurrentLocation, gLineTraceAction, gRunStraightAction, gCurvatureRunAction);
 	//Tacticsクラスに参照を設定する
-	Tactics::setObject(gEV3ColorSensor, gRunParameter, gCalcCurrentLocation, gDistanceJudgement, gTimerJudgement, gStraightDetection, gArmPositionSetAction, gLineTraceAction, gEdgeChangeAction, gRunStraightAction, gRotateMachineAction, gCurvatureRunAction, gDecelerationRotaryAction);
+	Tactics::setObject(gEV3ColorSensor, gRunParameter, gCalcCurrentLocation, gDistanceJudgement, gTimerJudgement, gStraightDetection, gArmPositionSetAction, gLineTraceAction, gEdgeChangeAction, gRunStraightAction, gRotateMachineAction, gCurvatureRunAction, gDecelerationRotaryAction,gFaceDisplay,gMusic);
 
 	// LEDをオレンジに光らせる
 	ev3_led_set_color(LED_ORANGE);
@@ -419,7 +425,7 @@ void calibration_task(intptr_t exinf)
 /**
 * ランタスク
 */
-static int state = 0;//5
+static int state = 12;//5
 
 void run_task(intptr_t exinf)
 {
@@ -433,6 +439,34 @@ void run_task(intptr_t exinf)
 		gCalcCurrentLocation->calcCurrentLocation(); //計算メソッド
 		switch (state)
 		{
+
+		case 10:
+		gFaceDisplay->setFace(FaceDisplay::FACE_COLOR1);
+
+		state++;
+
+
+		break;
+		case 11:
+		gFaceDisplay->show();
+		break;
+
+		case 12:
+		gMusic->load("/ev3rt/res/kakekko1.wav");
+		state=0;
+		gMusic->play(15, SOUND_MANUAL_STOP);
+		break;
+
+		case 13:
+		gRunParameter->setArmPower(60);
+		gRunParameter->setArmAngle(30);
+		gArmPositionSetAction->updateParameter();
+		state=14;
+		break;
+
+		case 14:
+		gArmPositionSetAction->start();
+		break;
 
 		case 0:
 			//スピード競技

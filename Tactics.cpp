@@ -20,6 +20,8 @@ RotateMachineAction *Tactics::mRotateMachineAction;
 CurvatureRunAction *Tactics::mCurvatureRunAction;
 LineDetectTurnAction *Tactics::mLineDetectTurnAction;
 DecelerationRotaryAction *Tactics::mDecelerationRotaryAction;
+FaceDisplay *Tactics::mFaceDisplay;
+Music *Tactics::mMusic;
 
 Tactics::~Tactics()
 {
@@ -42,7 +44,9 @@ void Tactics::setObject(
 	RotateMachineAction *rotateMachineAction,
 	CurvatureRunAction *curvatureRunAction,
 	//LineDetectTurnAction *lineDetectTurnAction,
-	DecelerationRotaryAction *decelerationRotaryAction)
+	DecelerationRotaryAction *decelerationRotaryAction,
+	FaceDisplay *facedisplay,
+	Music *music)
 {
 	mEV3ColorSensor = ev3ColorSensor;
 	mRunParameter = runParameter;
@@ -58,4 +62,6 @@ void Tactics::setObject(
 	mCurvatureRunAction = curvatureRunAction;
 	//mLineDetectTurnAction = lineDetectTurnAction;
 	mDecelerationRotaryAction = decelerationRotaryAction;
+	mFaceDisplay = facedisplay;
+	mMusic = music;
 }

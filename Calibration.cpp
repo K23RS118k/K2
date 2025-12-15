@@ -94,6 +94,7 @@ bool Calibration::calibrate()
 
     case 30: // 目標輝度計算
         target_brightness = (white_brightness + black_brightness) / 2;
+        target_brightness+=20;//目標値＋２０で青対策
 
         mRunParameter->setWhite(white_brightness);
         mRunParameter->setBlack(black_brightness);

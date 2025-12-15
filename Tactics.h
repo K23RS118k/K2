@@ -20,6 +20,9 @@
 #include "CurvatureRunAction.h"
 #include "LineDetectTurnAction.h"
 #include "DecelerationRotaryAction.h"
+#include "FaceDisplay.h"
+#include "Music.h"
+
 
 class Tactics
 {
@@ -43,7 +46,10 @@ class Tactics
 		RotateMachineAction *rotateMachineAction,
 		CurvatureRunAction *curvatureRunAction,
 		//LineDetectTurnAction *lineDetectTurnAction,
-		DecelerationRotaryAction *decelerationRotaryAction);
+		DecelerationRotaryAction *decelerationRotaryAction,
+		FaceDisplay *faceDisplay,
+		Music *music);
+
 
   protected:
 	/* 使用するクラスのオブジェクト */
@@ -64,6 +70,8 @@ class Tactics
 	static CurvatureRunAction *mCurvatureRunAction;
 	static LineDetectTurnAction *mLineDetectTurnAction;
 	static DecelerationRotaryAction *mDecelerationRotaryAction;
+	static FaceDisplay *mFaceDisplay;
+	static Music *mMusic;
 
 	//状態
 	int state;
