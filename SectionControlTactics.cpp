@@ -197,6 +197,8 @@ void SectionControlTactics::execute()
 		}
 		break;
 
+	//ここからフリーエリア
+		
 	case  21://強めのライントレース
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
