@@ -215,6 +215,15 @@ void main_task(intptr_t unused)
 	ev3_lcd_draw_string(buf, 0, CALIB_FONT_HEIGHT * 1);
 	//gSonarSensor->getDistance();
 
+
+	// ev3_lcd_draw_string("COLOR", 0, CALIB_FONT_HEIGHT * 3);
+	// char buf2[20];
+	// sprintf(buf2, "Terget:%d", gRunParameter->getTargetBrightness());
+	// ev3_lcd_draw_string(buf2, 0, CALIB_FONT_HEIGHT * 5);
+
+	
+
+
 	
 	//1000ミリ秒バッテリー表示画面を保持する
 	gTimerJudgement->setTime(1000);
@@ -400,6 +409,9 @@ void calibration_task(intptr_t exinf)
 {
 	switch (calib_state)
 	{
+		
+	
+
 	/*
 	case 0:
 		if (gCalibration->inputCode())
@@ -408,6 +420,7 @@ void calibration_task(intptr_t exinf)
 		}
 		break;
 	*/
+
 	case 0:
 		if (gCalibration->calibrate())
 		{
@@ -425,21 +438,26 @@ void calibration_task(intptr_t exinf)
 /**
 * ランタスク
 */
-static int state = 12;//5
+/**
+* ランタスク
+*/
+static int state = 12;//5or12 
 
 void run_task(intptr_t exinf)
 {
 	if (ev3_button_is_pressed(BACK_BUTTON))
 	{
 		wup_tsk(MAIN_TASK); //バックボタン押下
+		
 	}
+
+	
 	else
 	{
 
 		gCalcCurrentLocation->calcCurrentLocation(); //計算メソッド
 		switch (state)
 		{
-
 		case 10:
 		gFaceDisplay->setFace(FaceDisplay::FACE_COLOR1);
 
@@ -521,6 +539,7 @@ void run_task(intptr_t exinf)
 				}
 			}
 			break;
+
 			/*
 			case 0:
 			gBlockLineUpSearch->execute();
@@ -575,6 +594,7 @@ void run_task(intptr_t exinf)
 			//gBlockLineUpBehavior->BlockPut_X_Diagonal(false);
 			//gBlockLineUpBehavior->Uturn();
 			break;
+		
 			*/
 		}
 	}
