@@ -46,10 +46,11 @@ private:
 
 
   //まあまあ早い　20fps以上ないと脱線してしまう
-  double section0[4] = {25, 0.05, 0, 5.5};    //スタート
+  double sectionFC2[4] = {15, 0.05, 0, 2.5};
+  double section0[4] = {35, 0.05, 0, 5.5};    //スタート
   double section1[4] = {20, 0.4, 0, 6.0};  //カーブ1入り
   double section2[4] = {15, 0.1, 0, 6.7};     //フリーエリア色接近
-  double section3[4] = {25, 0.01, 0, 1.0};    //lap通過後
+  double section3[4] = {25, 0.1, 0, 6.7};    //lap通過後
   double section4[4] = {15, 0.5, 0, 5.0};     //直線2
   double section5[4] = {40, 0.95, 0, 12.0};   //カーブ3
   double section6[4] = {12, 0.015, 0, 0};    //フリーエリア//////////////////////
