@@ -185,7 +185,7 @@ void SectionControlTactics::execute()
 	case 20:
 		//
 		mRotateMachineAction->start();
-		if(mEV3ColorSensor->getColorBrightness()<=20)
+		if(mEV3ColorSensor->getColorBrightness()<=20||mRotateMachineAction->isFinished())
 		{
 			mDistanceJudgement->stop();
 			mRunParameter->setLineTraceSpeed(section1[SPEED]);
