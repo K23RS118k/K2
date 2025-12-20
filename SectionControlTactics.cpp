@@ -32,15 +32,15 @@ void SectionControlTactics::execute()
 		mRunParameter->setRunRightEdgeFlag(true);
 		mRunParameter->setChangeSpeedFlag(false);
 		//ev3_speaker_set_volume(50);
-		// mRunParameter->setLineTraceSpeed(section5[SPEED]);
-		// mRunParameter->setKP(section5[KP]);
-		// mRunParameter->setKI(section5[KI]);
-		// mRunParameter->setKD(section5[KD]);
+		mRunParameter->setLineTraceSpeed(section0[SPEED]);
+		mRunParameter->setKP(section0[KP]);
+		mRunParameter->setKI(section0[KI]);
+		mRunParameter->setKD(section0[KD]);
 		//フリーエリアデバッグ
-		 mRunParameter->setLineTraceSpeed(section2[SPEED]);
-		 mRunParameter->setKP(section2[KP]);
-		 mRunParameter->setKI(section2[KI]);
-		 mRunParameter->setKD(section2[KD]);
+		//  mRunParameter->setLineTraceSpeed(sectionFC2[SPEED]);
+		//  mRunParameter->setKP(sectionFC2[KP]);
+		//  mRunParameter->setKI(sectionFC2[KI]);
+		//  mRunParameter->setKD(sectionFC2[KD]);
 		
 		//mCalcCurrentLocation->setPointY(0);
 		//mCalcCurrentLocation->setPointX(0);
@@ -48,13 +48,13 @@ void SectionControlTactics::execute()
 		mLineTraceAction->updateParameter();
 
 		/* 座標補正までの距離を指定 */
-		//mDistanceJudgement->setDistance(295);//正式バージョン
+		mDistanceJudgement->setDistance(295);//正式バージョン
 		//mDistanceJudgement->setDistance(300);//フリーエリアデバッグ用
-		mDistanceJudgement->setDistance(40);//フリーエリアから用
+		//mDistanceJudgement->setDistance(40);//フリーエリアから用
 		mDistanceJudgement->start();
-		//state=1;//正式バージョン
+		state=1;//正式バージョン
 		//state = 20;//格子エリアから
-		state=21;//デバッグ用
+		//state=21;//デバッグ用
 		//state = 650; //赤９～赤１０
 		//state = 780;
 		mEV3ColorSensor->getColorBrightness();
@@ -114,7 +114,7 @@ void SectionControlTactics::execute()
 
 		break;
 
-	case 4://直線青
+	case 4://ゴールⅠ
 		mLineTraceAction->start();
 		if(mDistanceJudgement->isDistanceOut())
 		{
@@ -130,20 +130,20 @@ void SectionControlTactics::execute()
 		}
 	break;
 
-	case 5:
-	mLineTraceAction->start();
-	if(mEV3ColorSensor->isColor_BLUE())
-	{
-		mRunParameter->setLineTraceSpeed(section0[SPEED]);
-		mRunParameter->setKP(section3[KP]);
-		mRunParameter->setKI(section0[KI]);
-		mRunParameter->setKD(section3[KD]);
-		mLineTraceAction->updateParameter();
-		//state=10;
-		state = 220;
+	// case 5:
+	// mLineTraceAction->start();
+	// if(mEV3ColorSensor->isColor_BLUE())
+	// {
+	// 	mRunParameter->setLineTraceSpeed(section0[SPEED]);
+	// 	mRunParameter->setKP(section3[KP]);
+	// 	mRunParameter->setKI(section0[KI]);
+	// 	mRunParameter->setKD(section3[KD]);
+	// 	mLineTraceAction->updateParameter();
+	// 	//state=10;
+	// 	state = 220;
 
-	}
-	break;
+	// }
+	// break;
 
 
 
@@ -185,7 +185,7 @@ void SectionControlTactics::execute()
 	case 20:
 		//
 		mRotateMachineAction->start();
-		if(mRotateMachineAction->isFinished())
+		if(mEV3ColorSensor->getColorBrightness()<=20)
 		{
 			mDistanceJudgement->stop();
 			mRunParameter->setLineTraceSpeed(section1[SPEED]);
@@ -202,7 +202,7 @@ void SectionControlTactics::execute()
 
 	//ここからフリーエリア
 		
-	case  21://強めのライントレース
+	case 21://強めのライントレース
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
