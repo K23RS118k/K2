@@ -32,15 +32,15 @@ void SectionControlTactics::execute()
 		mRunParameter->setRunRightEdgeFlag(true);
 		mRunParameter->setChangeSpeedFlag(false);
 		//ev3_speaker_set_volume(50);
-		mRunParameter->setLineTraceSpeed(section0[SPEED]);
-		mRunParameter->setKP(section0[KP]);
-		mRunParameter->setKI(section0[KI]);
-		mRunParameter->setKD(section0[KD]);
+		// mRunParameter->setLineTraceSpeed(section0[SPEED]);
+		// mRunParameter->setKP(section0[KP]);
+		// mRunParameter->setKI(section0[KI]);
+		// mRunParameter->setKD(section0[KD]);
 		//フリーエリアデバッグ
-		//  mRunParameter->setLineTraceSpeed(sectionFC2[SPEED]);
-		//  mRunParameter->setKP(sectionFC2[KP]);
-		//  mRunParameter->setKI(sectionFC2[KI]);
-		//  mRunParameter->setKD(sectionFC2[KD]);
+		 mRunParameter->setLineTraceSpeed(sectionFC2[SPEED]);
+		 mRunParameter->setKP(sectionFC2[KP]);
+		 mRunParameter->setKI(sectionFC2[KI]);
+		 mRunParameter->setKD(sectionFC2[KD]);
 		
 		//mCalcCurrentLocation->setPointY(0);
 		//mCalcCurrentLocation->setPointX(0);
