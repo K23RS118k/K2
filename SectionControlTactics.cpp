@@ -48,13 +48,13 @@ void SectionControlTactics::execute()
 		mLineTraceAction->updateParameter();
 
 		/* 座標補正までの距離を指定 */
-		mDistanceJudgement->setDistance(295);//正式バージョン
+		//mDistanceJudgement->setDistance(295);//正式バージョン
 		//mDistanceJudgement->setDistance(300);//フリーエリアデバッグ用
-		//mDistanceJudgement->setDistance(40);//フリーエリアから用
+		mDistanceJudgement->setDistance(40);//フリーエリアから用
 		mDistanceJudgement->start();
-		state=1;//正式バージョン
+		//state=1;//正式バージョン
 		//state = 20;//格子エリアから
-		//state=21;//デバッグ用
+		state=21;//デバッグ用
 		//state = 650; //赤９～赤１０
 		//state = 780;
 		mEV3ColorSensor->getColorBrightness();
@@ -388,7 +388,7 @@ void SectionControlTactics::execute()
 		mFaceDisplay->setFace(FaceDisplay::FACE_COLOR1);//顔を変える
 		
 		mLineTraceAction->stop();
-		mDistanceJudgement->setDistance(2);
+		mDistanceJudgement->setDistance(5);
 		mDistanceJudgement->start();
 		ev3_speaker_play_tone(NOTE_C5, 320);
 		cycle_set(200);
