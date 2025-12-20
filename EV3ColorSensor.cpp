@@ -84,7 +84,7 @@ void EV3ColorSensor::getEncodeHSV()
     hue = Hue * 100;
     saturation = Saturation * 100;
     brightness = Brightness * 100;
-   
+   syslog(LOG_NOTICE, "%d,%d,%d,%d,%d,%d", (int16_t)hue,  (int16_t)saturation,  (int16_t)brightness, (int16_t)rgb.r, (int16_t)rgb.g, (int16_t)rgb.b);
     // BluetoothLogger::dataLogger(1, 1, (int16_t)rgb.r, (int16_t)rgb.g, (int16_t)rgb.b, (int16_t)(rgb_brightness * 100));
     // BluetoothLogger::dataLogger((int16_t)1, (int16_t)1, (int16_t)1, (int16_t)log1, (int16_t)log2, 1);
     // te_reference-172)/(182-172) * 3 + 98;
@@ -130,10 +130,10 @@ bool EV3ColorSensor::blue_counter2()//連続認識が必要。高速？
 }
  
 bool EV3ColorSensor::isColor_RED()
-{
+{//20,47,46     0,53,42     0,55,42       
     //return ((hue <= 10) && ((60 <= saturation) && (saturation <= 80)) && ((brightness >= 105) && (brightness <= 150))) ? true : false;
-    return ((hue <= 10) && ((50 <= saturation) && (saturation <= 80)) && ((brightness >= 80) && (brightness <= 150))) ? true : false;
-}
+    return ((hue <= 10) && ((40 <= saturation) && (saturation <= 80)) && ((brightness >= 30) && (brightness <= 100))) ? true : false;
+}//92,28,39    25,6,44    45,55,48
  
 bool EV3ColorSensor::isColor_GREEN()
 {
@@ -141,9 +141,9 @@ bool EV3ColorSensor::isColor_GREEN()
 }
  
 bool EV3ColorSensor::isColor_YELLOW()
-{
-    return ((hue <= 20) && (brightness >= 60)) ? true : false;
-}
+{//14,54,59  15,73,67    16,46,62    
+    return ((hue <= 25) && (brightness >= 50)) ? true : false;
+}// 12,46,54    15,72,70    15,74,69
  
 bool EV3ColorSensor::isColor_WHITE()
 {

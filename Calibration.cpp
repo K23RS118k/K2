@@ -36,7 +36,7 @@ bool Calibration::calibrate()
         ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
         sprintf(buf, "Calibration");
         ev3_lcd_draw_string(buf, 0, CALIB_FONT_HEIGHT * 1);
-
+        mEV3ColorSensor->getColorBrightness();
         mTimerJudgement->setTime(1000);
         mTimerJudgement->start();
         state_b = 10;
@@ -51,7 +51,7 @@ bool Calibration::calibrate()
 
         if (ev3_button_is_pressed(ENTER_BUTTON))
         {
-            white_brightness = mEV3ColorSensor->getBrightness();
+            white_brightness = mEV3ColorSensor->getColorBrightness();
             ev3_speaker_play_tone(NOTE_E5, 100);
 
             mTimerJudgement->setTime(300);
@@ -76,7 +76,7 @@ bool Calibration::calibrate()
 
         if (ev3_button_is_pressed(DOWN_BUTTON))
         {
-            black_brightness = mEV3ColorSensor->getBrightness();
+            black_brightness = mEV3ColorSensor->getColorBrightness();
             ev3_speaker_play_tone(NOTE_G4, 200);
 
             mTimerJudgement->setTime(300);

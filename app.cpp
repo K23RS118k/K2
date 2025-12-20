@@ -240,14 +240,14 @@ void main_task(intptr_t unused)
 
 	//キャリブレーションタスク開始
 	
-	//if (COURSE)
-//	{
+	if (COURSE)
+	{
 		sta_cyc(EV3_CYC_CALIBRATION);
 		//タスク終了まで待機
 		slp_tsk();
 		//キャリブレーションタスク終了
 		stp_cyc(EV3_CYC_CALIBRATION);
-	//}
+	}
 	
 	//アーム位置固定
 	/*
@@ -260,11 +260,11 @@ void main_task(intptr_t unused)
 	*/
 
 	//キャリブレーションタスク再開
-	//ev3_sta_cyc(EV3_CYC_CALIBRATION);
-	//タスク終了まで待機
-	//slp_tsk();
-	//キャリブレーションタスク終了
-	//ev3_stp_cyc(EV3_CYC_CALIBRATION);
+	// ev3_sta_cyc(EV3_CYC_CALIBRATION);
+	// //タスク終了まで待機
+	// slp_tsk();
+	// //キャリブレーションタスク終了
+	// ev3_stp_cyc(EV3_CYC_CALIBRATION);
 
 	//gTimerJudgement->setTime(1000);
 	//gTimerJudgement->start();
@@ -284,6 +284,7 @@ void main_task(intptr_t unused)
 	// ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
 	// ev3_speaker_play_tone(NOTE_C6, 200);
 
+	gFaceDisplay->load();
 	// スタート前に輝度値の基準を適当に設定
 	int black_brightness = 0;
 	int white_brightness = 50;
@@ -441,162 +442,107 @@ void calibration_task(intptr_t exinf)
 /**
 * ランタスク
 */
-static int state = 12;//5or12 
+// 
+static int state = 10; // 5 or 12
 
 void run_task(intptr_t exinf)
 {
-	if (ev3_button_is_pressed(BACK_BUTTON))
-	{
-		wup_tsk(MAIN_TASK); //バックボタン押下
-		
-	}
+    if (ev3_button_is_pressed(BACK_BUTTON))
+    {
+        wup_tsk(MAIN_TASK); // バックボタン押下
+    }
+    else
+    {
+        gCalcCurrentLocation->calcCurrentLocation(); // 計算メソッド
 
-	
-	else
-	{
-
-		gCalcCurrentLocation->calcCurrentLocation(); //計算メソッド
-		switch (state)
-		{
-		case 10:
-		gFaceDisplay->setFace(FaceDisplay::FACE_COLOR1);
-
-		state++;
-
-
-		break;
-		case 11:
-		gFaceDisplay->show();
-		break;
-
-		case 12:
-		gMusic->load("/ev3rt/res/kakekko1.wav");
-		state=0;
-		gMusic->play(15, SOUND_MANUAL_STOP);
-		break;
-
-		case 13:
-		gRunParameter->setArmPower(60);
-		gRunParameter->setArmAngle(30);
-		gArmPositionSetAction->updateParameter();
-		state=14;
-		break;
-
-		case 14:
-		gArmPositionSetAction->start();
-		break;
-
-		case 0:
-			//スピード競技
-			gSectionControlTactics->execute();
-			if (gSectionControlTactics->isFinished())
-			{
-				//wup_tsk(CAMERA_TASK); //カメラタスク再起動
-				//gTimerJudgement->setTime(2500);
-				//gTimerJudgement->start();
-				state =2;
-			}
-			break;
-
-		case 1:
-			//コース情報を取得する
-			if(gIPCommunication->getCourceInfo_sim()==true)
-			{
-				for(int i=1;i<=10;i++)
-				{
-					spot[i] = gIPCommunication->getBlockSpot_sim(i);
-					syslog(LOG_NOTICE, "spot = %d", spot[i]);
-				}
-				cardnumber = gIPCommunication->getCardNumber_sim();
-				blocknumber = gIPCommunication->getBlockNumber_sim();
-				syslog(LOG_NOTICE, "cardnumber = %d", cardnumber);
-				syslog(LOG_NOTICE, "blocknumber = %d", blocknumber);
-			}
-			//ブロック並べ攻略時、機体の幅を切り替える
-			//gCalcCurrentLocation->setChangeWidthFlag(true);
-			if (gTimerJudgement->isTimedOut() || gIPCommunication->isCompleted())
-			{
-				gTimerJudgement->stop();
-				state++;
-			}
-			break;
-
-		case 2:
-			gBlockLineUpSearch->execute();
-			if (gBlockLineUpSearch->isFinished())
-			{
-				if (gBlockLineUpSearch->getDirection() == 4)
-				{
-					state = 5;
-				}
-				else if (gBlockLineUpSearch->getDirection() == 1)
-				{
-					state = 6;
-				}
-				else if (gBlockLineUpSearch->getDirection() == 3)
-				{
-					state = 7;
-				}
-			}
-			break;
-
-			/*
+        switch (state)
+        {
 			case 0:
-			gBlockLineUpSearch->execute();
-			if (gBlockLineUpSearch->isFinished())
-			{
-				if(gBlockLineUpSearch->getDirection() == 4){
-					state = 5;
-				}else if(gBlockLineUpSearch->getDirection() == 1){
-					state = 6;
-				}else if(gBlockLineUpSearch->getDirection() == 3){
-					state = 7;
-				}
-			}
-			break;
-			*/
+                // スピード競技
+                gSectionControlTactics->execute();
+                if (gSectionControlTactics->isFinished())
+                {
+                    state = 2;
+                }
+            break;
 
-		case 5:
-			//直列駐車攻略
-			//	gBlockLineUpBehavior->TurnRight_Y_axis(true);
-			// gRGarageTactics->execute();
-			break;
-		case 6:
-			//直列駐車攻略
-			//	gBlockLineUpBehavior->TurnRight_Y_axis(true);
-			// gRGarageTactics->execute1();
-			break;
-		case 7:
-			//直列駐車攻略
-			//	gBlockLineUpBehavior->TurnRight_Y_axis(true);
-			// gRGarageTactics->execute2();
-			break;
-			/*
-		case 2:
-			gBlockBingo->execute_turn();
-			state = 8;
-			break;
+            case 1:
+                // コース情報を取得
+                if (gIPCommunication->getCourceInfo_sim())
+                {
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        spot[i] = gIPCommunication->getBlockSpot_sim(i);
+                        syslog(LOG_NOTICE, "spot = %d", spot[i]);
+                    }
+                    cardnumber = gIPCommunication->getCardNumber_sim();
+                    blocknumber = gIPCommunication->getBlockNumber_sim();
+                }
 
-		case 8:
-			gRGarageTactics->execute3();
-			break;
-			*/
+                if (gTimerJudgement->isTimedOut() || gIPCommunication->isCompleted())
+                {
+                    gTimerJudgement->stop();
+                    state++;
+                }
+            break;
 
-			/*
-		case 0:
-			//gBlockLineUpBehavior->BlockPut_X_left(false);
-			//gBlockLineUpBehavior->TurnRight_X_axis(false);
-			//gBlockLineUpBehavior->TurnLeft_X_axis(true);
-			//gBlockLineUpBehavior->TurnRight_X_axis(true);
-			//gBlockLineUpBehavior->BlockPut_X_left(false);
-			gBlockLineUpBehavior->BlockPut_X_Right(true);
-			//gBlockLineUpBehavior->BlockPut_Y_Diagonal(false);
-			//gBlockLineUpBehavior->BlockPut_X_Diagonal(false);
-			//gBlockLineUpBehavior->Uturn();
+            case 2:
+                gBlockLineUpSearch->execute();
+                if (gBlockLineUpSearch->isFinished())
+                {
+                    if (gBlockLineUpSearch->getDirection() == 4) state = 5;
+                    else if (gBlockLineUpSearch->getDirection() == 1) state = 6;
+                    else if (gBlockLineUpSearch->getDirection() == 3) state = 7;
+                }
+            break;
+
+            case 10:
+                
+				gMusic->load("/ev3rt/res/kakekko1.wav");
+				gMusic->play(15, SOUND_MANUAL_STOP);
+                state = 0;
+            break;
+
+            case 11:
+                gFaceDisplay->show();
+				state = 0;
+            break;
+
+            case 12:
+                gMusic->load("/ev3rt/res/kakekko1.wav");
+                gMusic->play(15, SOUND_MANUAL_STOP);
+                state = 0;
+            break;
+
+            case 13:
+                gRunParameter->setArmPower(60);
+                gRunParameter->setArmAngle(30);
+                gArmPositionSetAction->updateParameter();
+                state = 14;
+            break;
+
+            case 14:
+                gArmPositionSetAction->start();
+            break;
+
+			case 101:
+				gEV3ColorSensor->getEncodeHSV();
+				gEV3ColorSensor->getColorBrightness();
+
+				char buf3[30];
+				sprintf(buf3, "Target:%d",
+						gEV3ColorSensor->getColorBrightness());
+
+				// 状態維持
+				state = 101;
 			break;
 		
-			*/
+            default:
+                break;
 		}
-	}
+            
+    }
 	ext_tsk();
 }
+
+ 

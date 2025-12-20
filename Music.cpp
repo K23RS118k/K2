@@ -22,6 +22,7 @@ bool Music::load(const char* filepath) {
     // ev3_memfile_loadを使ってWAVファイルをロードします。E_OK (0) は成功。
     if (ev3_memfile_load(filepath, &m_memfile) == E_OK) {
         m_is_loaded = true;
+        ev3_memfile_free(&m_memfile); 
         return true;
     }
 
