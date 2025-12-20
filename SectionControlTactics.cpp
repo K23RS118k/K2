@@ -223,6 +223,8 @@ void SectionControlTactics::execute()
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -275,6 +277,8 @@ void SectionControlTactics::execute()
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -324,6 +328,8 @@ void SectionControlTactics::execute()
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -340,7 +346,7 @@ void SectionControlTactics::execute()
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_GREEN())
 	{
-		mFaceDisplay->setFace(FaceDisplay::FACE_COLOR1);//顔を変える
+	
 		mFaceDisplay->setFace(4);
 		mFaceDisplay->show();
 		mLineTraceAction->stop();
@@ -376,6 +382,8 @@ void SectionControlTactics::execute()
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -392,7 +400,7 @@ void SectionControlTactics::execute()
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_GREEN())
 	{
-		mFaceDisplay->setFace(FaceDisplay::FACE_COLOR1);//顔を変える		
+				
 		mLineTraceAction->stop();
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(4);
@@ -434,6 +442,8 @@ void SectionControlTactics::execute()
 	case 550:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_GREEN()){
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(5);
 		mDistanceJudgement->start();
@@ -474,6 +484,8 @@ case 560:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -490,6 +502,8 @@ case 560:
 	case 572:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_GREEN()){
+		mFaceDisplay->setFace(4);
+		mFaceDisplay->show();
 		ev3_speaker_play_tone(NOTE_C5 , 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
@@ -520,6 +534,8 @@ case 560:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -536,10 +552,13 @@ case 560:
 	case 592:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_BLUE()){
+		mFaceDisplay->setFace(2);
+		mFaceDisplay->show();
 		ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
+
 		state = 600;
 	}
 	break;
@@ -565,6 +584,8 @@ case 610://強めのライントレース
     mLineTraceAction->start();
     if(mDistanceJudgement->isDistanceOut())
     {
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
         mDistanceJudgement->stop();
         mRunParameter->setLineTraceSpeed(section6[SPEED]);
         mRunParameter->setKP(section6[KP]);
@@ -627,6 +648,8 @@ case 612:
 	case 630:
     mLineTraceAction->start();
     if(mEV3ColorSensor->isColor_RED()){
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
         ev3_speaker_play_tone(NOTE_C5, 100);
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(5);
@@ -640,6 +663,8 @@ case 612:
 	case 640:
     mRunStraightAction->straight(10,10);
     if(mDistanceJudgement->isDistanceOut()){
+		mFaceDisplay->setFace(1);
+		mFaceDisplay->show();
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(5);
         mDistanceJudgement->start();
@@ -669,6 +694,8 @@ case 612:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section1[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -685,6 +712,8 @@ case 612:
 	case 650:
     mLineTraceAction->start();
     if(mEV3ColorSensor->isColor_RED()){
+		mFaceDisplay->setFace(1);
+		mFaceDisplay->show();
         ev3_speaker_play_tone(NOTE_C5, 100);
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(10);
@@ -714,6 +743,8 @@ case 612:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section1[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -730,6 +761,8 @@ case 612:
 	case 672:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_YELLOW()){
+		mFaceDisplay->setFace(3);
+		mFaceDisplay->show();
 		ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
@@ -758,6 +791,8 @@ case 612:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section1[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -773,6 +808,8 @@ case 612:
 	case 690://黄12検知するまでライントレース
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_YELLOW()){
+		mFaceDisplay->setFace(3);
+		mFaceDisplay->show();
 		ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
@@ -809,6 +846,8 @@ case 612:
 	case 720:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_YELLOW()){
+		mFaceDisplay->setFace(1);
+		mFaceDisplay->show();
 		ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(5);
@@ -822,6 +861,8 @@ case 612:
 	case 722:
     mRunStraightAction->straight(10,10);
     if(mDistanceJudgement->isDistanceOut()){
+		mFaceDisplay->setFace(1);
+		mFaceDisplay->show();
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
@@ -833,6 +874,8 @@ case 612:
 	case 730:
 	mRunStraightAction->straight(20,0);
 	if(mEV3ColorSensor->getColorBrightness()<=20){
+		mFaceDisplay->setFace(3);
+		mFaceDisplay->show();
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
 		mRunParameter->setKI(section2[KI]);
@@ -850,6 +893,8 @@ case 612:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();				
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -866,6 +911,8 @@ case 612:
 	case 740:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_YELLOW()){
+		mFaceDisplay->setFace(3);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
@@ -895,6 +942,8 @@ case 612:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())					
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();				
 		mRunParameter->setLineTraceSpeed(section1[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -911,6 +960,8 @@ case 612:
 	case 760:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_RED()){
+		mFaceDisplay->setFace(1);
+		mFaceDisplay->show();
 		ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
@@ -940,6 +991,8 @@ case 612:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())					
 	{
+		mFaceDisplay->setFace(5);
+		mFaceDisplay->show();
 		mDistanceJudgement->stop();		
 		mRunParameter->setLineTraceSpeed(section1[SPEED]);				
 		mRunParameter->setKP(section6[KP]);
@@ -1040,6 +1093,8 @@ case 810:
 	case 820:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_YELLOW()){
+		mFaceDisplay->setFace(3);
+		mFaceDisplay->show();
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
 		mRunParameter->setKI(section2[KI]);
