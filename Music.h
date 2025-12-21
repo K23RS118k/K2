@@ -2,6 +2,8 @@
 #define MUSIC_H
 
 #include "ev3api.h"
+#include <cstdint>
+#include <stdio.h>
 
 /**
  * @brief WAVファイルをロード・再生するクラス

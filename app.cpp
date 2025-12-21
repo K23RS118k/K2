@@ -443,7 +443,7 @@ void calibration_task(intptr_t exinf)
 * ランタスク
 */
 // 
-static int state = 10; // 5 or 12
+static int state = 0; // 5 or 12
 
 void run_task(intptr_t exinf)
 {
@@ -459,30 +459,21 @@ void run_task(intptr_t exinf)
         {
 			case 0:
                 // スピード競技
+				//memfile_t memfile; // メモリファイルの構造体を作成
+				//ev3_memfile_load("ev3rt/res/jinguru.wav", &memfile); //SDカード内の"test.wav"をメモリファイルとしてロード
+				//gMusic->load("/ev3rt/res/kakekko3.wav");
+				//gMusic->play(15, SOUND_MANUAL_STOP);
+				// ev3_memfile_load("/ev3rt/res/kakekko3.wav", &memfile); //SDカード内の"test.wav"をメモリファイルとしてロード
+				// ev3_speaker_set_volume(15); //音量の設定
+				// ev3_speaker_play_file(&memfile, SOUND_MANUAL_STOP); // 音声ファイルを再生
+                state = 1;
+            break;
+
+            case 1:
                 gSectionControlTactics->execute();
                 if (gSectionControlTactics->isFinished())
                 {
                     state = 2;
-                }
-            break;
-
-            case 1:
-                // コース情報を取得
-                if (gIPCommunication->getCourceInfo_sim())
-                {
-                    for (int i = 1; i <= 10; i++)
-                    {
-                        spot[i] = gIPCommunication->getBlockSpot_sim(i);
-                        syslog(LOG_NOTICE, "spot = %d", spot[i]);
-                    }
-                    cardnumber = gIPCommunication->getCardNumber_sim();
-                    blocknumber = gIPCommunication->getBlockNumber_sim();
-                }
-
-                if (gTimerJudgement->isTimedOut() || gIPCommunication->isCompleted())
-                {
-                    gTimerJudgement->stop();
-                    state++;
                 }
             break;
 
@@ -504,7 +495,8 @@ void run_task(intptr_t exinf)
             break;
 
             case 11:
-                gFaceDisplay->show();
+				// gFaceDisplay->setFace(5);
+                // gFaceDisplay->show();
 				state = 0;
             break;
 

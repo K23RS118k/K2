@@ -31,6 +31,8 @@ void SectionControlTactics::execute()
 	{
 	case 0: //スタート
 		/* 走行パラメータを設定する */
+		//mMusic->load("/ev3rt/res/jinguru.wav");
+		//mMusic->play(15, SOUND_MANUAL_STOP);
 		mRunParameter->setRunRightEdgeFlag(true);
 		mRunParameter->setChangeSpeedFlag(false);
 		//ev3_speaker_set_volume(50);
@@ -54,6 +56,14 @@ void SectionControlTactics::execute()
 		//mDistanceJudgement->setDistance(300);//フリーエリアデバッグ用
 		mDistanceJudgement->setDistance(40);//フリーエリアから用
 		mDistanceJudgement->start();
+		mFaceDisplay->load();
+
+		memfile_t memfile; // メモリファイルの構造体を作成
+		ev3_memfile_load("/ev3rt/res/kakekko3.wav", &memfile); //SDカード内の"test.wav"をメモリファイルとしてロード
+		ev3_speaker_set_volume(15); //音量の設定
+		ev3_speaker_play_file(&memfile, SOUND_MANUAL_STOP); // 音声ファイルを再生
+		// mMusic->load("/ev3rt/res/kakekko3.wav");
+		// mMusic->play(15, SOUND_MANUAL_STOP);
 		//state=1;//正式バージョン
 		//state = 20;//格子エリアから
 		state=21;//デバッグ用
@@ -81,7 +91,7 @@ void SectionControlTactics::execute()
 		if (mDistanceJudgement->isDistanceOut())
 		{
 			/* 座標を補正 */
-			//ev3_speaker_play_tone(NOTE_C5, 320);
+			////ev3_speaker_play_tone(NOTE_C5, 320);
 			mLineTraceAction->stop();
 			mDistanceJudgement->stop();
 			mDistanceJudgement->setDistance(40);
@@ -183,7 +193,7 @@ void SectionControlTactics::execute()
 		if (cycle_start()) //50
 		{
 			//ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			////ev3_speaker_play_tone(NOTE_C5, 100);
 			mTimerJudgement->stop();
 			mRunStraightAction->stop();
 			mRunParameter->setRotateAngle(-84);
@@ -223,8 +233,8 @@ void SectionControlTactics::execute()
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		//mFaceDisplay->setFace(5);
+		//mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -247,7 +257,7 @@ void SectionControlTactics::execute()
 		mLineTraceAction->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
-		ev3_speaker_play_tone(NOTE_C5, 320);
+		// //ev3_speaker_play_tone(NOTE_C5, 320);
 		mFaceDisplay->setFace(2);
 		mFaceDisplay->show();
 		// cycle_set(200);
@@ -300,7 +310,7 @@ void SectionControlTactics::execute()
 		mLineTraceAction->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
-		ev3_speaker_play_tone(NOTE_C5, 320);
+		////ev3_speaker_play_tone(NOTE_C5, 320);
 		cycle_set(200);
 		state=505;
 	}
@@ -352,7 +362,7 @@ void SectionControlTactics::execute()
 		mLineTraceAction->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
-		ev3_speaker_play_tone(NOTE_C5, 320);
+		//ev3_speaker_play_tone(NOTE_C5, 320);
 		cycle_set(200);
 		state=515;
 		//state=220;
@@ -405,7 +415,7 @@ void SectionControlTactics::execute()
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(4);
 		mDistanceJudgement->start();
-		ev3_speaker_play_tone(NOTE_C5, 320);
+		//ev3_speaker_play_tone(NOTE_C5, 320);
 		cycle_set(200);
 		state=530;		
 		//state=220;
@@ -433,7 +443,7 @@ void SectionControlTactics::execute()
 	case 540:
 	mRunStraightAction->straight(7,-4);
 	if(mEV3ColorSensor->getColorBrightness()<=20){
-		ev3_speaker_play_tone(NOTE_C4 , 100);
+		//ev3_speaker_play_tone(NOTE_C4 , 100);
 		state=550;
 	}
 	break;
@@ -453,7 +463,7 @@ void SectionControlTactics::execute()
 
 	//緑8エリア
 	//第2コーナーまで直進
-case 560:
+	case 560:
     mRunStraightAction->straight(10,10);
     if(mDistanceJudgement->isDistanceOut()){
         mDistanceJudgement->stop();
@@ -504,7 +514,7 @@ case 560:
 	if(mEV3ColorSensor->isColor_GREEN()){
 		mFaceDisplay->setFace(4);
 		mFaceDisplay->show();
-		ev3_speaker_play_tone(NOTE_C5 , 100);
+		//ev3_speaker_play_tone(NOTE_C5 , 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
@@ -534,6 +544,7 @@ case 560:
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
 	{
+		//ev3_speaker_play_tone(NOTE_C5, 100);
 		mFaceDisplay->setFace(5);
 		mFaceDisplay->show();
 		mDistanceJudgement->stop();
@@ -554,7 +565,7 @@ case 560:
 	if(mEV3ColorSensor->isColor_BLUE()){
 		mFaceDisplay->setFace(2);
 		mFaceDisplay->show();
-		ev3_speaker_play_tone(NOTE_C5, 100);
+		////ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
@@ -563,8 +574,8 @@ case 560:
 	}
 	break;
 
-//青６円を直進する
-case 600:
+	//青６円を直進する
+	case 600:
     mRunStraightAction->straight(13,12);
     if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
@@ -579,8 +590,8 @@ case 600:
     }
     break;
 
-//青5エリア
-case 610://強めのライントレース
+	//青5エリア
+	case 610://強めのライントレース
     mLineTraceAction->start();
     if(mDistanceJudgement->isDistanceOut())
     {
@@ -598,11 +609,11 @@ case 610://強めのライントレース
     }
     break;
 
-//青５検知までライントレース
-case 612:
+	//青５検知までライントレース
+	case 612:
     mLineTraceAction->start();
     if(mEV3ColorSensor->isColor_BLUE()){
-        ev3_speaker_play_tone(NOTE_C5, 100);
+        ////ev3_speaker_play_tone(NOTE_C5, 100);
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(1);
         mDistanceJudgement->start();
@@ -627,18 +638,18 @@ case 612:
 	}
 	break;
 
-//第3コーナー左折
+	//第3コーナー左折
 	case 620:
     mRunStraightAction->straight(0,15);
     if(mEV3ColorSensor->getColorBrightness()<=25){
-        ev3_speaker_play_tone(NOTE_C5, 100);
+        //ev3_speaker_play_tone(NOTE_C5, 100);
         mRunParameter->setLineTraceSpeed(section2[SPEED]);
         mRunParameter->setKP(section2[KP]);
         mRunParameter->setKI(section2[KI]);
         mRunParameter->setKD(section2[KD]);
         mLineTraceAction->updateParameter();
         mDistanceJudgement->stop();
-        mDistanceJudgement->setDistance(5);
+        mDistanceJudgement->setDistance(3);
         mDistanceJudgement->start();
         state=630;
     }
@@ -650,9 +661,9 @@ case 612:
     if(mEV3ColorSensor->isColor_RED()){
 		mFaceDisplay->setFace(5);
 		mFaceDisplay->show();
-        ev3_speaker_play_tone(NOTE_C5, 100);
+        //ev3_speaker_play_tone(NOTE_C5, 100);
         mDistanceJudgement->stop();
-        mDistanceJudgement->setDistance(5);
+        mDistanceJudgement->setDistance(1);
         mDistanceJudgement->start();
         state = 640;
     }
@@ -661,12 +672,12 @@ case 612:
 	//赤9エリア
 	//第4コーナーまで直進
 	case 640:
-    mRunStraightAction->straight(10,10);
+    mRunStraightAction->straight(8,10);
     if(mDistanceJudgement->isDistanceOut()){
 		mFaceDisplay->setFace(1);
 		mFaceDisplay->show();
         mDistanceJudgement->stop();
-        mDistanceJudgement->setDistance(5);
+        mDistanceJudgement->setDistance(3);
         mDistanceJudgement->start();
         state = 645;
     }
@@ -674,7 +685,7 @@ case 612:
 
 	//第4コーナー左折
 	case 645:
-	mRunStraightAction->straight(-5,15);
+	mRunStraightAction->straight(0,15);
 	if(mEV3ColorSensor->getColorBrightness()<=20){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -697,7 +708,7 @@ case 612:
 		mFaceDisplay->setFace(5);
 		mFaceDisplay->show();
 		mDistanceJudgement->stop();
-		mRunParameter->setLineTraceSpeed(section1[SPEED]);
+		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);
 		mRunParameter->setKD(section6[KD]);
@@ -714,7 +725,7 @@ case 612:
     if(mEV3ColorSensor->isColor_RED()){
 		mFaceDisplay->setFace(1);
 		mFaceDisplay->show();
-        ev3_speaker_play_tone(NOTE_C5, 100);
+        //ev3_speaker_play_tone(NOTE_C5, 100);
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(10);
         mDistanceJudgement->start();
@@ -746,7 +757,7 @@ case 612:
 		mFaceDisplay->setFace(5);
 		mFaceDisplay->show();
 		mDistanceJudgement->stop();
-		mRunParameter->setLineTraceSpeed(section1[SPEED]);
+		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);
 		mRunParameter->setKD(section6[KD]);
@@ -763,7 +774,7 @@ case 612:
 	if(mEV3ColorSensor->isColor_YELLOW()){
 		mFaceDisplay->setFace(3);
 		mFaceDisplay->show();
-		ev3_speaker_play_tone(NOTE_C5, 100);
+		//ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
@@ -794,7 +805,7 @@ case 612:
 		mFaceDisplay->setFace(5);
 		mFaceDisplay->show();
 		mDistanceJudgement->stop();
-		mRunParameter->setLineTraceSpeed(section1[SPEED]);
+		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);				
 		mRunParameter->setKD(section6[KD]);
@@ -810,16 +821,16 @@ case 612:
 	if(mEV3ColorSensor->isColor_YELLOW()){
 		mFaceDisplay->setFace(3);
 		mFaceDisplay->show();
-		ev3_speaker_play_tone(NOTE_C5, 100);
+		//ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
-		mDistanceJudgement->setDistance(10);
+		mDistanceJudgement->setDistance(7);
 		mDistanceJudgement->start();
 		state = 700;
 	}
 	break;
 
 	case 700://黄12円を直進する
-	mRunStraightAction->straight(25,25);
+	mRunStraightAction->straight(15,14);
 	if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -835,9 +846,9 @@ case 612:
 	
 	//第５コーナー右折する
 	case 710:
-	mRunStraightAction->straight(20,0);
+	mRunStraightAction->straight(6,-4);
 	if(mEV3ColorSensor->getColorBrightness()<=20){
-		ev3_speaker_play_tone(NOTE_C4 , 100);
+		//ev3_speaker_play_tone(NOTE_C4 , 100);
 		state=720;
 	}
 	break;
@@ -848,7 +859,7 @@ case 612:
 	if(mEV3ColorSensor->isColor_YELLOW()){
 		mFaceDisplay->setFace(1);
 		mFaceDisplay->show();
-		ev3_speaker_play_tone(NOTE_C5, 100);
+		//ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(5);
 		mDistanceJudgement->start();
@@ -872,7 +883,7 @@ case 612:
 
 	//第６コーナー右折する
 	case 730:
-	mRunStraightAction->straight(20,0);
+	mRunStraightAction->straight(9,-4);
 	if(mEV3ColorSensor->getColorBrightness()<=20){
 		mFaceDisplay->setFace(3);
 		mFaceDisplay->show();
@@ -916,7 +927,7 @@ case 612:
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
-		ev3_speaker_play_tone(NOTE_C5 , 100);
+		//ev3_speaker_play_tone(NOTE_C5 , 100);
 		state = 750;
 	}
 	break;
@@ -962,7 +973,7 @@ case 612:
 	if(mEV3ColorSensor->isColor_RED()){
 		mFaceDisplay->setFace(1);
 		mFaceDisplay->show();
-		ev3_speaker_play_tone(NOTE_C5, 100);
+		//ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
@@ -994,7 +1005,7 @@ case 612:
 		mFaceDisplay->setFace(5);
 		mFaceDisplay->show();
 		mDistanceJudgement->stop();		
-		mRunParameter->setLineTraceSpeed(section1[SPEED]);				
+		mRunParameter->setLineTraceSpeed(section6[SPEED]);				
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);				
 		mRunParameter->setKD(section6[KD]);			
@@ -1009,18 +1020,17 @@ case 612:
 	case 782:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_RED()){
-		ev3_speaker_play_tone(NOTE_C5, 100);
+		//ev3_speaker_play_tone(NOTE_C5, 100);
 		state = 790;
 	}
 	break;
 
 	//180度回転して直進
 	case 790:
-	mRunStraightAction->straight(-10,15);
+	mRunStraightAction->straight(-10,13);
     if(mEV3ColorSensor->getColorBrightness()<=20){
-
         mDistanceJudgement->stop();
-        mDistanceJudgement->setDistance(10);
+        mDistanceJudgement->setDistance(5);
         mDistanceJudgement->start();
         state=800;
     }
@@ -1030,7 +1040,7 @@ case 612:
 	case 800://強めのライントレース
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())				
-	{				
+	{
 		mDistanceJudgement->stop();			
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);			
 		mRunParameter->setKP(section6[KP]);			
@@ -1048,15 +1058,15 @@ case 612:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_RED()){
 		mDistanceJudgement->stop();
-		mDistanceJudgement->setDistance(10);
+		mDistanceJudgement->setDistance(5);
 		mDistanceJudgement->start();
-		ev3_speaker_play_tone(NOTE_C5 , 100);
+		//ev3_speaker_play_tone(NOTE_C5 , 100);
 		state = 810;
 	}
 	break;
 
 	//赤14円を直進する
-case 810:
+	case 810:
     mRunStraightAction->straight(15,11);
     if(mDistanceJudgement->isDistanceOut()){
         mRunParameter->setLineTraceSpeed(section2[SPEED]);
@@ -1072,7 +1082,7 @@ case 810:
     break;
 
 
-	//黄16エリア
+	//黄15エリア
 	case 812://強めのライントレース
 	mLineTraceAction->start();
 	if(mDistanceJudgement->isDistanceOut())
@@ -1089,7 +1099,7 @@ case 810:
 	}
 	break;	
 
-	//黄１６検知までライントレース
+	//黄15検知までライントレース
 	case 820:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_YELLOW()){
@@ -1100,7 +1110,7 @@ case 810:
 		mRunParameter->setKI(section2[KI]);
 		mRunParameter->setKD(section2[KD]);
 		mLineTraceAction->updateParameter();
-		ev3_speaker_play_tone(NOTE_C5, 100);
+		//ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
@@ -1108,7 +1118,7 @@ case 810:
 	}
 	break;
 
-	//黄１６進入
+	//黄15進入
 	case 830:
 	mRunStraightAction->straight(14,12);
 	if(mDistanceJudgement->isDistanceOut()){
@@ -1124,11 +1134,12 @@ case 810:
 	}
 	break;
 
+	//黄16検知	
 	//最後のストップ
 	case 840:
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_YELLOW()){
-		ev3_speaker_play_tone(NOTE_C5, 100);
+		//ev3_speaker_play_tone(NOTE_C5, 100);
 		state = 220;
 	}
 	break;
@@ -1241,7 +1252,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() < -125) //175->110
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 40;
 		}
 		break;
@@ -1263,7 +1274,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointX() > 62) //110,92
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 50;
 		}
 		break;
@@ -1286,7 +1297,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() > -115) //143
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 60;
 		}
 		break;
@@ -1309,7 +1320,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() > -40) //y80
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 70;
 		}
 		break;
@@ -1332,7 +1343,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointX() >145 )
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 80;
 		}
 		break;
@@ -1355,7 +1366,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointX() > 165)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 90;
 		}
 		break;
@@ -1379,7 +1390,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() < -55)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 95;
 		}
 		break;
@@ -1403,7 +1414,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() < -100)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 110;
 		}
 		break;
@@ -1426,7 +1437,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointX() < 155)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 120;
 		}
 		break;
@@ -1449,7 +1460,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointX() < 5) //85
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 130;
 		}
 		break;
@@ -1472,7 +1483,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() < -145) //Y68
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 140;
 		}
 		break;
@@ -1495,7 +1506,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() < -223)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 150;
 		}
 		break;
@@ -1518,7 +1529,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() < -263)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 160;
 		}
 		break;
@@ -1541,7 +1552,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointX() > 40)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 170;
 		}
 		break;
@@ -1566,7 +1577,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointX() > 45)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 211;
 		}
 		break;
@@ -1595,7 +1606,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() > 220)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 190;
 		}
 		break;
@@ -1618,7 +1629,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointY() > 248)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state++;
 		}
 		break;
@@ -1641,7 +1652,7 @@ case 810:
 		if (mCalcCurrentLocation->getPointX() < 155)
 		{
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			state++;
 		}
 		break;
@@ -1658,7 +1669,7 @@ case 810:
 		if (mTimerJudgement->isTimedOut())
 		{ //タイムアウト
 			ev3_speaker_set_volume(50);
-			ev3_speaker_play_tone(NOTE_DS6, 400);
+			//ev3_speaker_play_tone(NOTE_DS6, 400);
 			mTimerJudgement->stop();
 			state = 220;
 		}

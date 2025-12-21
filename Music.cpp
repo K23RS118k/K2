@@ -1,4 +1,6 @@
 #include "Music.h"
+#include <cstdint>
+#include <stdio.h>
 // ev3api.h は Music.h でインクルード済み
 
 Music::Music() : m_is_loaded(false) {}
@@ -33,6 +35,7 @@ bool Music::load(const char* filepath) {
 bool Music::play(int volume, int duration) {
     if (!m_is_loaded) {
         // ファイルがロードされていない場合は再生できません
+        ev3_lcd_draw_string("memfile load error", 0, 0);
         return false;
     }
 
