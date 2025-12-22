@@ -137,7 +137,8 @@ bool EV3ColorSensor::isColor_RED()
  
 bool EV3ColorSensor::isColor_GREEN()
 {
-    return ((hue >= 30) && ((50 <= saturation) && (saturation <= 80)) && (brightness > 60)) ? true : false;
+    //55,49,48  38,68,33   41,62,37
+    return ((hue >= 30) && ((50 <= saturation) && (saturation <= 80)) && (brightness > 20)) ? true : false;
 }
  
 bool EV3ColorSensor::isColor_YELLOW()

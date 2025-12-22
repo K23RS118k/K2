@@ -6,7 +6,8 @@
 SectionControlTactics::SectionControlTactics(ev3api::ColorSensor &colorSensor,EV3SonarSensor* ev3sonarSensor)
 	: mColorSensor(colorSensor),mEV3SonarSensor(ev3sonarSensor)
 {
-	state = 0;
+	state = 0;	//初めから
+	//state = 2000; //フリーエリア用
 }
 
 SectionControlTactics::~SectionControlTactics()
@@ -18,10 +19,6 @@ SectionControlTactics::~SectionControlTactics()
 */
 void SectionControlTactics::execute()
 {
-
-	//BluetoothLogger::dataLogger(0, 0, (int16_t)mCalcCurrentLocation->getPointX(), (int16_t)mCalcCurrentLocation->getPointY(), (int16_t)mCalcCurrentLocation->getAngle(), (int16_t)state);
-
-	//	BluetoothLogger::dataLogger((int8_t)state, 0, (int16_t)mLineTraceAction -> getSpeed(), (int16_t)mLineTraceAction -> getKP(), (int16_t)mLineTraceAction -> getKI(),(int16_t)mLineTraceAction -> getKD());
 	/**
 	* 区間制御
 	*/
@@ -31,188 +28,145 @@ void SectionControlTactics::execute()
 	{
 	case 0: //スタート
 		/* 走行パラメータを設定する */
-		//mMusic->load("/ev3rt/res/jinguru.wav");
-		//mMusic->play(15, SOUND_MANUAL_STOP);
 		mRunParameter->setRunRightEdgeFlag(true);
 		mRunParameter->setChangeSpeedFlag(false);
-		//ev3_speaker_set_volume(50);
-		// mRunParameter->setLineTraceSpeed(section0[SPEED]);
-		// mRunParameter->setKP(section0[KP]);
-		// mRunParameter->setKI(section0[KI]);
-		// mRunParameter->setKD(section0[KD]);
-		//フリーエリアデバッグ
-		 mRunParameter->setLineTraceSpeed(sectionFC2[SPEED]);
-		 mRunParameter->setKP(sectionFC2[KP]);
-		 mRunParameter->setKI(sectionFC2[KI]);
-		 mRunParameter->setKD(sectionFC2[KD]);
-		
-		//mCalcCurrentLocation->setPointY(0);
-		//mCalcCurrentLocation->setPointX(0);
-		/* ライントレースの走行パラメータを更新 */
+		mRunParameter->setLineTraceSpeed(section0[SPEED]);
+		mRunParameter->setKP(section0[KP]);
+		mRunParameter->setKI(section0[KI]);
+		mRunParameter->setKD(section0[KD]);
 		mLineTraceAction->updateParameter();
 
+		/* 現在位置を(0,0)に設定 */
+		mCalcCurrentLocation->setPointY(0);
+		mCalcCurrentLocation->setPointX(0);
+		
 		/* 座標補正までの距離を指定 */
-		//mDistanceJudgement->setDistance(295);//正式バージョン
-		//mDistanceJudgement->setDistance(300);//フリーエリアデバッグ用
-		mDistanceJudgement->setDistance(40);//フリーエリアから用
+		mDistanceJudgement->stop();
+		mDistanceJudgement->setDistance(285);
 		mDistanceJudgement->start();
+
+		//face load
 		mFaceDisplay->load();
 
+		// 音楽関連
 		memfile_t memfile; // メモリファイルの構造体を作成
 		ev3_memfile_load("/ev3rt/res/kakekko3.wav", &memfile); //SDカード内の"test.wav"をメモリファイルとしてロード
 		ev3_speaker_set_volume(15); //音量の設定
 		ev3_speaker_play_file(&memfile, SOUND_MANUAL_STOP); // 音声ファイルを再生
 		// mMusic->load("/ev3rt/res/kakekko3.wav");
 		// mMusic->play(15, SOUND_MANUAL_STOP);
-		//state=1;//正式バージョン
-		//state = 20;//格子エリアから
-		state=21;//デバッグ用
-		
-		cycle_set(1500);
-		//state = 650; //赤９～赤１０
-		//state = 780;
-		//state = 610;
-		//state=7000;
-		break;
+		//mMusic->load("/ev3rt/res/jinguru.wav");
+		//mMusic->play(15, SOUND_MANUAL_STOP);
+		state=1;
 
-		case 7000:
-			if(cycle_start())
-			{
-				mMusic->load("/ev3rt/res/kakekko1.wav");
-        		mMusic->play(15, SOUND_MANUAL_STOP);
-				state = 21;
-			}
-			//state = 7005;
-		break;
+		cycle_set(1500);// サイクルセット
+
+		mFaceDisplay->setFace(0);
+	break;
+
 
 	case 1: //スタートカーブ手前
 		/* ライントレースを実行 */
 		mLineTraceAction->start();
+		mFaceDisplay->show();
 		if (mDistanceJudgement->isDistanceOut())
 		{
 			/* 座標を補正 */
-			////ev3_speaker_play_tone(NOTE_C5, 320);
 			mLineTraceAction->stop();
 			mDistanceJudgement->stop();
-			mDistanceJudgement->setDistance(40);
+			mDistanceJudgement->setDistance(45);
 			mDistanceJudgement->start();
 			mRunParameter->setLineTraceSpeed(section1[SPEED]);
 			mRunParameter->setKP(section1[KP]);
 			mRunParameter->setKI(section1[KI]);
 			mRunParameter->setKD(section1[KD]);
 			mLineTraceAction->updateParameter();
-			state =2;
+			state = 2;
 		}
-		break;
+	break;
 
 	case 2://第一カーブ走行
 		mLineTraceAction->start();
+		mFaceDisplay->show();
 		if(mDistanceJudgement->isDistanceOut())
 		{
-			mDistanceJudgement->stop();
 			mRunParameter->setLineTraceSpeed(section0[SPEED]);
 			mRunParameter->setKP(section0[KP]);
 			mRunParameter->setKI(section0[KI]);
 			mRunParameter->setKD(section0[KD]);
-			mDistanceJudgement->setDistance(170);
-			mDistanceJudgement->start();
 			mLineTraceAction->updateParameter();
-
+			mDistanceJudgement->stop();
+			mDistanceJudgement->setDistance(165);
+			mDistanceJudgement->start();	
 			state=3;
 		}
-		break;
+	break;
 
 	case 3://カーブ２
 		mLineTraceAction->start();
+		mFaceDisplay->show();
 		if(mDistanceJudgement->isDistanceOut())
 		{
-			mLineTraceAction->stop();
-			mDistanceJudgement->setDistance(40);
-			mDistanceJudgement->start();
 			mRunParameter->setLineTraceSpeed(section1[SPEED]);
 			mRunParameter->setKP(section1[KP]);
 			mRunParameter->setKI(section1[KI]);
 			mRunParameter->setKD(section1[KD]);
 			mLineTraceAction->updateParameter();
+			mLineTraceAction->stop();
+			mDistanceJudgement->setDistance(60);
+			mDistanceJudgement->start();
 			state=4;
 		}
-
-		break;
+	break;
 
 	case 4://ゴールⅠ
 		mLineTraceAction->start();
+		mFaceDisplay->show();
 		if(mDistanceJudgement->isDistanceOut())
 		{
 			mLineTraceAction->stop();
-			//mDistanceJudgement->setDistance(30);
-			//mDistanceJudgement->start();
-			mRunParameter->setLineTraceSpeed(section0[SPEED]);
+			mRunParameter->setLineTraceSpeed(section3[SPEED]);
 			mRunParameter->setKP(section0[KP]);
 			mRunParameter->setKI(section0[KI]);
-			mRunParameter->setKD(section0[KD]);
+			mRunParameter->setKD(2.0);
 			mLineTraceAction->updateParameter();
+			memfile_t memfile; // メモリファイルの構造体を作成
+			ev3_memfile_load("/ev3rt/res/bell5.wav", &memfile); //SDカード内の"test.wav"をメモリファイルとしてロード
+			ev3_speaker_set_volume(15); //音量の設定
+			ev3_speaker_play_file(&memfile, SOUND_MANUAL_STOP); // 音声ファイルを再生
 			state=10;
 		}
 	break;
 
-	// case 5:
-	// mLineTraceAction->start();
-	// if(mEV3ColorSensor->isColor_BLUE())
-	// {
-	// 	mRunParameter->setLineTraceSpeed(section0[SPEED]);
-	// 	mRunParameter->setKP(section3[KP]);
-	// 	mRunParameter->setKI(section0[KI]);
-	// 	mRunParameter->setKD(section3[KD]);
-	// 	mLineTraceAction->updateParameter();
-	// 	//state=10;
-	// 	state = 220;
-
-	// }
-	// break;
-
-
-
-
-	case 10: //フリーエリア前の赤、後にsonarsensorに差し替えmEV3ColorSensor->isColor_RED()
+	case 10://フリーエリア前の壁検知
 		mLineTraceAction->start();
+		mFaceDisplay->show();
 		if(mEV3SonarSensor->isDetected(13))
 		{
-			mDistanceJudgement->stop();
 			mLineTraceAction->stop();
-			cycle_set(500);
-
-			
+			cycle_set(500);	
 			state=11;
 		}
-		
-		break;
+	break;
 
 
 	case 11:
 		/*ライントレースを実行する*/
-		if (cycle_start()) //50
+		if (cycle_start())
 		{
-			//ev3_speaker_set_volume(50);
-			////ev3_speaker_play_tone(NOTE_C5, 100);
-			mTimerJudgement->stop();
-			mRunStraightAction->stop();
+			////ev3_speaker_set_volume(50);
+			//ev3_speaker_play_tone(NOTE_C5, 100);
 			mRunParameter->setRotateAngle(-84);
 			mRunParameter->setRotateSpeed(10);
 			mRotateMachineAction->updateParameter();
-
-			
-			
-
 			state = 20;
 		}
-		break;
+	break;
 
 	case 20:
-		//
 		mRotateMachineAction->start();
-		if(mEV3ColorSensor->getColorBrightness()<=20||mRotateMachineAction->isFinished())
+		if(mEV3ColorSensor->getColorBrightness()<=20 || mRotateMachineAction->isFinished())
 		{
-			mDistanceJudgement->stop();
 			mRunParameter->setLineTraceSpeed(section1[SPEED]);
 			mRunParameter->setKP(section2[KP]);
 			mRunParameter->setKI(section2[KI]);
@@ -222,15 +176,33 @@ void SectionControlTactics::execute()
 			mDistanceJudgement->setDistance(40);
 			mDistanceJudgement->start();
 			state=21;
-
 		}
-		break;
+	break;
 
-	//ここからフリーエリア
-	
+	/*
+	ここからフリーエリア
+	*/
+
+	case 2000:
+		//フリーエリアデバッグ
+		mRunParameter->setRunRightEdgeFlag(true);
+		mRunParameter->setChangeSpeedFlag(false);
+		mRunParameter->setLineTraceSpeed(sectionFC2[SPEED]);
+		mRunParameter->setKP(sectionFC2[KP]);
+		mRunParameter->setKI(sectionFC2[KI]);
+		mRunParameter->setKD(sectionFC2[KD]);
+		mLineTraceAction->updateParameter();
+		mDistanceJudgement->stop();
+		mDistanceJudgement->setDistance(40);
+		mDistanceJudgement->start();
+		state=21;//デバッグ用
+	break;	
+
 	//青1エリア
-	case  21://強めのライントレース
+	case 21://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->setFace(5);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
 		//mFaceDisplay->setFace(5);
@@ -243,8 +215,26 @@ void SectionControlTactics::execute()
 		mLineTraceAction->updateParameter();
 		mDistanceJudgement->setDistance(40);
 		mDistanceJudgement->start();
+		mLineTraceAction->stop();
+		cycle_set(500);
+		state=5000;
+	}
+	break;
+
+	case 5000:
+		mLineTraceAction->stop();
+		//memfile_t memfile; // メモリファイルの構造体を作成
+		ev3_memfile_load("/ev3rt/res/jinglebell5.wav", &memfile); //SDカード内の"test.wav"をメモリファイルとしてロード
+		ev3_speaker_set_volume(15); //音量の設定
+		ev3_speaker_play_file(&memfile, SOUND_MANUAL_STOP); // 音声ファイルを再生
 		state=22;
-		//state = 500;
+	break;
+
+
+	case 5005:
+	mLineTraceAction->stop();
+	if(cycle_start()){
+		state=22;
 	}
 	break;
 
@@ -252,21 +242,22 @@ void SectionControlTactics::execute()
 	mLineTraceAction->start();
 	if(mEV3ColorSensor->isColor_BLUE())
 	{
-		mFaceDisplay->setFace(0);
-		mFaceDisplay->show();
+		
 		mLineTraceAction->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
-		// //ev3_speaker_play_tone(NOTE_C5, 320);
+		
+		////ev3_speaker_set_volume(50);
+		//	//	ev3_speaker_play_tone(NOTE_C5, 320);;
+
 		mFaceDisplay->setFace(2);
-		mFaceDisplay->show();
-		// cycle_set(200);
+
 		state=23;
 	}
 	break;
 	
 	case 23://青1円を直進する
-	mRunStraightAction->straight(14,12);
+	mRunStraightAction->straight(12,12);
 	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
@@ -275,9 +266,13 @@ void SectionControlTactics::execute()
 		mRunParameter->setKI(section2[KI]);
 		mRunParameter->setKD(section2[KD]);
 		mLineTraceAction->updateParameter();
+
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(15);
 		mDistanceJudgement->start();
+
+		mFaceDisplay->setFace(5);
+
 		state=24;
 	}
 	break;
@@ -285,18 +280,19 @@ void SectionControlTactics::execute()
 	//青２エリア
 	case 24://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
-		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);
 		mRunParameter->setKD(section6[KD]);
 		mLineTraceAction->updateParameter();
+
+		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(40);
 		mDistanceJudgement->start();
+
 		state = 500;
 	}
 	break;
@@ -304,21 +300,25 @@ void SectionControlTactics::execute()
 	case 500:
 	//青２検知までライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_BLUE())
 	{
-		mFaceDisplay->setFace(FaceDisplay::FACE_COLOR1);
 		mLineTraceAction->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
-		////ev3_speaker_play_tone(NOTE_C5, 320);
-		cycle_set(200);
+
+		//	//	ev3_speaker_play_tone(NOTE_C5, 320);;
+
+		mFaceDisplay->setFace(2);
+		
 		state=505;
 	}
 	break;
 
 	//青２円を直進する
 	case 505:
-	mRunStraightAction->straight(14,12);
+	mRunStraightAction->straight(12,12);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
@@ -326,9 +326,13 @@ void SectionControlTactics::execute()
 		mRunParameter->setKI(section2[KI]);
 		mRunParameter->setKD(section2[KD]);
 		mLineTraceAction->updateParameter();
+
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(15);
 		mDistanceJudgement->start();
+
+		mFaceDisplay->setFace(5);
+
 		state = 510;
 	}
 	break;
@@ -336,16 +340,15 @@ void SectionControlTactics::execute()
 	//緑3エリア
 	case  510://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
-		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section2[KI]);
 		mRunParameter->setKD(section6[KD]);
 		mLineTraceAction->updateParameter();
+		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(40);
 		mDistanceJudgement->start();
 		state=512;
@@ -354,18 +357,19 @@ void SectionControlTactics::execute()
 
 	case 512://緑3検知までライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_GREEN())
 	{
 	
 		mFaceDisplay->setFace(4);
-		mFaceDisplay->show();
+		
 		mLineTraceAction->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
-		//ev3_speaker_play_tone(NOTE_C5, 320);
-		cycle_set(200);
+
+		//	//	ev3_speaker_play_tone(NOTE_C5, 320);;
+
 		state=515;
-		//state=220;
 	}
 	break;
 	
@@ -380,9 +384,13 @@ void SectionControlTactics::execute()
 		mRunParameter->setKI(section2[KI]);
 		mRunParameter->setKD(section2[KD]);
 		mLineTraceAction->updateParameter();
+
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(15);
 		mDistanceJudgement->start();
+
+		mFaceDisplay->setFace(5);
+
 		state=520;
 	}
 	break;
@@ -390,10 +398,9 @@ void SectionControlTactics::execute()
 	//緑4ライントレース
 	case 520://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -408,33 +415,25 @@ void SectionControlTactics::execute()
 
 	case 525://緑4検知までライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_GREEN())
 	{
-				
 		mLineTraceAction->stop();
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(4);
 		mDistanceJudgement->start();
-		//ev3_speaker_play_tone(NOTE_C5, 320);
-		cycle_set(200);
+		//	//	ev3_speaker_play_tone(NOTE_C5, 320);;
+		mFaceDisplay->setFace(4);
 		state=530;		
-		//state=220;
 	}
 	break;
 
 	case 530://緑4円を直進する
-	mRunStraightAction->straight(15,14);
+	mRunStraightAction->straight(14,12);
 	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mRunParameter->setLineTraceSpeed(section2[SPEED]);
-		mRunParameter->setKP(section2[KP]);
-		mRunParameter->setKI(section2[KI]);
-		mRunParameter->setKD(section2[KD]);
-		mLineTraceAction->updateParameter();
 		mDistanceJudgement->stop();
-		mDistanceJudgement->setDistance(25);
-		mDistanceJudgement->start();
 		state = 540;
 	}
 	break;
@@ -443,7 +442,16 @@ void SectionControlTactics::execute()
 	case 540:
 	mRunStraightAction->straight(7,-4);
 	if(mEV3ColorSensor->getColorBrightness()<=20){
-		//ev3_speaker_play_tone(NOTE_C4 , 100);
+		////	ev3_speaker_play_tone(NOTE_C4 , 100);
+		mRunParameter->setLineTraceSpeed(section30[SPEED]);
+		mRunParameter->setKP(section30[KP]);
+		mRunParameter->setKI(section30[KI]);
+		mRunParameter->setKD(section30[KD]);
+		mLineTraceAction->updateParameter();
+		mDistanceJudgement->stop();
+		mDistanceJudgement->setDistance(10);
+		mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state=550;
 	}
 	break;
@@ -451,12 +459,26 @@ void SectionControlTactics::execute()
 	//第2コーナーまで進む
 	case 550:
 	mLineTraceAction->start();
-	if(mEV3ColorSensor->isColor_GREEN()){
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+	mFaceDisplay->show();
+	if(mDistanceJudgement->isDistanceOut()){
+		mRunParameter->setLineTraceSpeed(section6[SPEED]);
+		mRunParameter->setKP(section6[KP]);
+		mRunParameter->setKI(section6[KI]);
+		mRunParameter->setKD(section6[KD]);
+		mLineTraceAction->updateParameter();
 		mDistanceJudgement->stop();
-		mDistanceJudgement->setDistance(5);
+		state = 555;
+	}
+	break;
+
+	case 555:
+	mLineTraceAction->start();
+	mFaceDisplay->show();
+	if(mEV3ColorSensor->isColor_GREEN()){
+		mDistanceJudgement->stop();
+		mDistanceJudgement->setDistance(3);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(4);
 		state = 560;
 	}
 	break;
@@ -465,10 +487,9 @@ void SectionControlTactics::execute()
 	//第2コーナーまで直進
 	case 560:
     mRunStraightAction->straight(10,10);
+	mFaceDisplay->show();
     if(mDistanceJudgement->isDistanceOut()){
         mDistanceJudgement->stop();
-        mDistanceJudgement->setDistance(15);
-        mDistanceJudgement->start();
         state = 565;
     }
     break;
@@ -476,15 +497,18 @@ void SectionControlTactics::execute()
 	//第2コーナー右折する
 	case 565:
 	mRunStraightAction->straight(9,-4);
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->getColorBrightness()<=20){
-		mRunParameter->setLineTraceSpeed(section2[SPEED]);
-		mRunParameter->setKP(section2[KP]);
-		mRunParameter->setKI(section2[KI]);
-		mRunParameter->setKD(section2[KD]);
+		mRunParameter->setLineTraceSpeed(section30[SPEED]);
+		mRunParameter->setKP(section30[KP]);
+		mRunParameter->setKI(section30[KI]);
+		mRunParameter->setKD(section30[KD]);
 		mLineTraceAction->updateParameter();
 		mDistanceJudgement->stop();	
-		mDistanceJudgement->setDistance(15);
+		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
+
+		mFaceDisplay->setFace(5);
 		state=570;
 	}
 	break;
@@ -492,18 +516,15 @@ void SectionControlTactics::execute()
 	//緑7エリア
 	case 570://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);
 		mRunParameter->setKD(section6[KD]);
 		mLineTraceAction->updateParameter();
-		mDistanceJudgement->setDistance(40);
-		mDistanceJudgement->start();
 		state=572;
 	}
 	break;
@@ -511,20 +532,23 @@ void SectionControlTactics::execute()
 	//緑７検知までライントレース
 	case 572:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_GREEN()){
 		mFaceDisplay->setFace(4);
 		mFaceDisplay->show();
-		//ev3_speaker_play_tone(NOTE_C5 , 100);
+		////	ev3_speaker_play_tone(NOTE_C5 , 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(4);
 		state = 580;
 	}
 	break;
 
 	//緑７円を直進する
 	case 580:
-	mRunStraightAction->straight(13,11);
+	mRunStraightAction->straight(12,12);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -534,6 +558,7 @@ void SectionControlTactics::execute()
 		mDistanceJudgement->stop();	
 		mDistanceJudgement->setDistance(15);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state = 590;
 	}
 	break;
@@ -542,11 +567,11 @@ void SectionControlTactics::execute()
 	//青６検知までライントレース
 	case 590://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		//ev3_speaker_play_tone(NOTE_C5, 100);
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		////	ev3_speaker_play_tone(NOTE_C5, 100);
+		
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -562,10 +587,10 @@ void SectionControlTactics::execute()
 	//青6検知までライントレース
 	case 592:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_BLUE()){
 		mFaceDisplay->setFace(2);
-		mFaceDisplay->show();
-		////ev3_speaker_play_tone(NOTE_C5, 100);
+		//////	ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
@@ -576,7 +601,8 @@ void SectionControlTactics::execute()
 
 	//青６円を直進する
 	case 600:
-    mRunStraightAction->straight(13,12);
+    mRunStraightAction->straight(12,12);
+	mFaceDisplay->show();
     if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -586,6 +612,7 @@ void SectionControlTactics::execute()
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
         state = 610;
     }
     break;
@@ -593,18 +620,16 @@ void SectionControlTactics::execute()
 	//青5エリア
 	case 610://強めのライントレース
     mLineTraceAction->start();
+	mFaceDisplay->show();
     if(mDistanceJudgement->isDistanceOut())
     {
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		
         mDistanceJudgement->stop();
         mRunParameter->setLineTraceSpeed(section6[SPEED]);
         mRunParameter->setKP(section6[KP]);
         mRunParameter->setKI(section6[KI]);
         mRunParameter->setKD(section6[KD]);
         mLineTraceAction->updateParameter();
-        mDistanceJudgement->setDistance(40);
-        mDistanceJudgement->start();
         state=612;
     }
     break;
@@ -612,11 +637,13 @@ void SectionControlTactics::execute()
 	//青５検知までライントレース
 	case 612:
     mLineTraceAction->start();
+	mFaceDisplay->show();
     if(mEV3ColorSensor->isColor_BLUE()){
-        ////ev3_speaker_play_tone(NOTE_C5, 100);
+        //////	ev3_speaker_play_tone(NOTE_C5, 100);
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(1);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(2);
         state = 615;
     }
     break;
@@ -626,45 +653,57 @@ void SectionControlTactics::execute()
 	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mRunParameter->setLineTraceSpeed(section2[SPEED]);
-		mRunParameter->setKP(section2[KP]);
-		mRunParameter->setKI(section2[KI]);
-		mRunParameter->setKD(section2[KD]);
-		mLineTraceAction->updateParameter();
 		mDistanceJudgement->stop();
-		mDistanceJudgement->setDistance(15);
-		mDistanceJudgement->start();
+
 		state = 620;
 	}
 	break;
 
 	//第3コーナー左折
 	case 620:
-    mRunStraightAction->straight(0,15);
-    if(mEV3ColorSensor->getColorBrightness()<=25){
-        //ev3_speaker_play_tone(NOTE_C5, 100);
-        mRunParameter->setLineTraceSpeed(section2[SPEED]);
-        mRunParameter->setKP(section2[KP]);
-        mRunParameter->setKI(section2[KI]);
-        mRunParameter->setKD(section2[KD]);
+    mRunStraightAction->straight(0,10);
+	mFaceDisplay->show();
+    if(mEV3ColorSensor->getColorBrightness()<=15){
+        ////	ev3_speaker_play_tone(NOTE_C5, 100);
+        mRunParameter->setLineTraceSpeed(section30[SPEED]);
+        mRunParameter->setKP(section30[KP]);
+        mRunParameter->setKI(section30[KI]);
+        mRunParameter->setKD(section30[KD]);
         mLineTraceAction->updateParameter();
         mDistanceJudgement->stop();
-        mDistanceJudgement->setDistance(3);
+        mDistanceJudgement->setDistance(10);
         mDistanceJudgement->start();
-        state=630;
+		mFaceDisplay->setFace(5);
+        state=625;
     }
     break;
+
+	case 625://強めのライントレース
+		mLineTraceAction->start();
+		mFaceDisplay->show();
+		if(mDistanceJudgement->isDistanceOut())
+		{
+			mDistanceJudgement->stop();
+			mRunParameter->setLineTraceSpeed(section6[SPEED]);
+			mRunParameter->setKP(section6[KP]);
+			mRunParameter->setKI(section6[KI]);
+			mRunParameter->setKD(section6[KD]);
+			mLineTraceAction->updateParameter();
+			state=630;
+		}
+	break;
 
 	//第4コーナーまで進む
 	case 630:
     mLineTraceAction->start();
+	mFaceDisplay->show();
     if(mEV3ColorSensor->isColor_RED()){
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
-        //ev3_speaker_play_tone(NOTE_C5, 100);
+		
+        ////	ev3_speaker_play_tone(NOTE_C5, 100);
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(1);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(1);
         state = 640;
     }
     break;
@@ -673,12 +712,9 @@ void SectionControlTactics::execute()
 	//第4コーナーまで直進
 	case 640:
     mRunStraightAction->straight(8,10);
+	mFaceDisplay->show();
     if(mDistanceJudgement->isDistanceOut()){
-		mFaceDisplay->setFace(1);
-		mFaceDisplay->show();
         mDistanceJudgement->stop();
-        mDistanceJudgement->setDistance(3);
-        mDistanceJudgement->start();
         state = 645;
     }
     break;
@@ -686,6 +722,7 @@ void SectionControlTactics::execute()
 	//第4コーナー左折
 	case 645:
 	mRunStraightAction->straight(0,15);
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->getColorBrightness()<=20){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -693,8 +730,9 @@ void SectionControlTactics::execute()
 		mRunParameter->setKD(section2[KD]);
 		mLineTraceAction->updateParameter();
 		mDistanceJudgement->stop();	
-		mDistanceJudgement->setDistance(10);
+		mDistanceJudgement->setDistance(15);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state=647;
 	}
 	break;
@@ -703,18 +741,16 @@ void SectionControlTactics::execute()
 	//赤10エリア
 	case 647://	強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);
 		mRunParameter->setKD(section6[KD]);
 		mLineTraceAction->updateParameter();
-		mDistanceJudgement->setDistance(40);
-		mDistanceJudgement->start();
 		state=650;
 	}
 	break;	
@@ -722,10 +758,10 @@ void SectionControlTactics::execute()
 	//赤10検知までライントレース
 	case 650:
     mLineTraceAction->start();
+	mFaceDisplay->show();
     if(mEV3ColorSensor->isColor_RED()){
 		mFaceDisplay->setFace(1);
-		mFaceDisplay->show();
-        //ev3_speaker_play_tone(NOTE_C5, 100);
+        ////	ev3_speaker_play_tone(NOTE_C5, 100);
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(10);
         mDistanceJudgement->start();
@@ -736,6 +772,7 @@ void SectionControlTactics::execute()
 	//赤10円を直進する
 	case 660:
 	mRunStraightAction->straight(14,12);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -745,6 +782,7 @@ void SectionControlTactics::execute()
 		mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state = 670;
 	}
 	break;
@@ -752,18 +790,17 @@ void SectionControlTactics::execute()
 	//黄11エリア
 	case 670://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);
 		mRunParameter->setKD(section6[KD]);
 		mLineTraceAction->updateParameter();
-		mDistanceJudgement->setDistance(40);
-		mDistanceJudgement->start();
+		
 		state=672;
 	}
 	break;
@@ -771,19 +808,20 @@ void SectionControlTactics::execute()
 	//黄11検知するまでライントレース
 	case 672:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_YELLOW()){
-		mFaceDisplay->setFace(3);
-		mFaceDisplay->show();
-		//ev3_speaker_play_tone(NOTE_C5, 100);
+		////	ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(3);
 		state = 680;
 	}
 	break;
 
 	case 680://黄11円を直進する
 	mRunStraightAction->straight(15,15);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -793,6 +831,7 @@ void SectionControlTactics::execute()
 		mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state = 682;
 	}
 	break;
@@ -800,10 +839,10 @@ void SectionControlTactics::execute()
 	//黄12エリア
 	case 682://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		
 		mDistanceJudgement->stop();
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -818,19 +857,20 @@ void SectionControlTactics::execute()
 
 	case 690://黄12検知するまでライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_YELLOW()){
-		mFaceDisplay->setFace(3);
-		mFaceDisplay->show();
-		//ev3_speaker_play_tone(NOTE_C5, 100);
+		////	ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
-		mDistanceJudgement->setDistance(7);
+		mDistanceJudgement->setDistance(5);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(3);
 		state = 700;
 	}
 	break;
 
 	case 700://黄12円を直進する
 	mRunStraightAction->straight(15,14);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -847,8 +887,10 @@ void SectionControlTactics::execute()
 	//第５コーナー右折する
 	case 710:
 	mRunStraightAction->straight(6,-4);
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->getColorBrightness()<=20){
-		//ev3_speaker_play_tone(NOTE_C4 , 100);
+		////	ev3_speaker_play_tone(NOTE_C4 , 100);
+		mFaceDisplay->setFace(5);
 		state=720;
 	}
 	break;
@@ -856,13 +898,13 @@ void SectionControlTactics::execute()
 	//第６コーナーまで進む
 	case 720:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_YELLOW()){
-		mFaceDisplay->setFace(1);
-		mFaceDisplay->show();
-		//ev3_speaker_play_tone(NOTE_C5, 100);
+		////	ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
-		mDistanceJudgement->setDistance(5);
+		mDistanceJudgement->setDistance(3);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(3);
 		state = 722;
 	}
 	break;
@@ -871,9 +913,8 @@ void SectionControlTactics::execute()
 	//第6コーナーまで直進
 	case 722:
     mRunStraightAction->straight(10,10);
+	mFaceDisplay->show();
     if(mDistanceJudgement->isDistanceOut()){
-		mFaceDisplay->setFace(1);
-		mFaceDisplay->show();
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
@@ -884,9 +925,8 @@ void SectionControlTactics::execute()
 	//第６コーナー右折する
 	case 730:
 	mRunStraightAction->straight(9,-4);
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->getColorBrightness()<=20){
-		mFaceDisplay->setFace(3);
-		mFaceDisplay->show();
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
 		mRunParameter->setKI(section2[KI]);
@@ -895,6 +935,7 @@ void SectionControlTactics::execute()
 		mDistanceJudgement->stop();	
 		mDistanceJudgement->setDistance(15);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state=733;
 	}
 	break;
@@ -902,10 +943,10 @@ void SectionControlTactics::execute()
 	//黄15エリア
 	case 733://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		
 		mDistanceJudgement->stop();				
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -921,20 +962,21 @@ void SectionControlTactics::execute()
 	//黄１５までライントレース
 	case 740:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_YELLOW()){
-		mFaceDisplay->setFace(3);
-		mFaceDisplay->show();
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
-		//ev3_speaker_play_tone(NOTE_C5 , 100);
+		mFaceDisplay->setFace(3);
+		////	ev3_speaker_play_tone(NOTE_C5 , 100);
 		state = 750;
 	}
 	break;
 
 	//黄15円を直進する
 	case 750:
-	mRunStraightAction->straight(15,11);
+	mRunStraightAction->straight(12,12);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -944,6 +986,7 @@ void SectionControlTactics::execute()
 		mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state = 752;
 	}
 	break;
@@ -951,10 +994,10 @@ void SectionControlTactics::execute()
 	//赤14エリア
 	case 752://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())					
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		
 		mDistanceJudgement->stop();				
 		mRunParameter->setLineTraceSpeed(section1[SPEED]);
 		mRunParameter->setKP(section6[KP]);
@@ -970,13 +1013,15 @@ void SectionControlTactics::execute()
 	//赤14検知までライントレース
 	case 760:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_RED()){
 		mFaceDisplay->setFace(1);
 		mFaceDisplay->show();
-		//ev3_speaker_play_tone(NOTE_C5, 100);
+		////	ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(1);
 		state = 770;
 	}
 	break;
@@ -984,6 +1029,7 @@ void SectionControlTactics::execute()
 	//赤14円を直進する
 	case 770:
 	mRunStraightAction->straight(14,12);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -993,6 +1039,7 @@ void SectionControlTactics::execute()
 		mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state = 780;
 	}
 	break;
@@ -1000,18 +1047,16 @@ void SectionControlTactics::execute()
 	//赤13エリア
 	case 780://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())					
 	{
-		mFaceDisplay->setFace(5);
-		mFaceDisplay->show();
+		
 		mDistanceJudgement->stop();		
 		mRunParameter->setLineTraceSpeed(section6[SPEED]);				
 		mRunParameter->setKP(section6[KP]);
 		mRunParameter->setKI(section6[KI]);				
 		mRunParameter->setKD(section6[KD]);			
 		mLineTraceAction->updateParameter();			
-		mDistanceJudgement->setDistance(40);			
-		mDistanceJudgement->start();
 		state=782;
 	}
 	break;
@@ -1019,19 +1064,28 @@ void SectionControlTactics::execute()
 	//赤13検知
 	case 782:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_RED()){
-		//ev3_speaker_play_tone(NOTE_C5, 100);
+		////	ev3_speaker_play_tone(NOTE_C5, 100);
+		mFaceDisplay->setFace(1);
 		state = 790;
 	}
 	break;
 
 	//180度回転して直進
 	case 790:
-	mRunStraightAction->straight(-10,13);
+	mRunStraightAction->straight(-5,8);
+	mFaceDisplay->show();
     if(mEV3ColorSensor->getColorBrightness()<=20){
-        mDistanceJudgement->stop();
-        mDistanceJudgement->setDistance(5);
-        mDistanceJudgement->start();
+       mRunParameter->setLineTraceSpeed(section2[SPEED]);
+		mRunParameter->setKP(section2[KP]);
+		mRunParameter->setKI(section2[KI]);
+		mRunParameter->setKD(section2[KD]);
+		mLineTraceAction->updateParameter();
+		mDistanceJudgement->stop();	
+		mDistanceJudgement->setDistance(10);
+		mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
         state=800;
     }
     break;
@@ -1039,6 +1093,7 @@ void SectionControlTactics::execute()
 	//赤14エリア
 	case 800://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())				
 	{
 		mDistanceJudgement->stop();			
@@ -1056,18 +1111,21 @@ void SectionControlTactics::execute()
 	//赤１４までライントレース
 	case 802:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_RED()){
 		mDistanceJudgement->stop();
-		mDistanceJudgement->setDistance(5);
+		mDistanceJudgement->setDistance(11);
 		mDistanceJudgement->start();
-		//ev3_speaker_play_tone(NOTE_C5 , 100);
+		mFaceDisplay->setFace(1);
+		////	ev3_speaker_play_tone(NOTE_C5 , 100);
 		state = 810;
 	}
 	break;
 
 	//赤14円を直進する
 	case 810:
-    mRunStraightAction->straight(15,11);
+    mRunStraightAction->straight(13,11);
+	mFaceDisplay->show();
     if(mDistanceJudgement->isDistanceOut()){
         mRunParameter->setLineTraceSpeed(section2[SPEED]);
         mRunParameter->setKP(section2[KP]);
@@ -1077,6 +1135,7 @@ void SectionControlTactics::execute()
         mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
         state = 812;
     }
     break;
@@ -1085,6 +1144,7 @@ void SectionControlTactics::execute()
 	//黄15エリア
 	case 812://強めのライントレース
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut())
 	{
 		mDistanceJudgement->stop();			
@@ -1102,25 +1162,26 @@ void SectionControlTactics::execute()
 	//黄15検知までライントレース
 	case 820:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_YELLOW()){
-		mFaceDisplay->setFace(3);
-		mFaceDisplay->show();
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
 		mRunParameter->setKI(section2[KI]);
 		mRunParameter->setKD(section2[KD]);
 		mLineTraceAction->updateParameter();
-		//ev3_speaker_play_tone(NOTE_C5, 100);
+		////	ev3_speaker_play_tone(NOTE_C5, 100);
 		mDistanceJudgement->stop();
 		mDistanceJudgement->setDistance(10);
 		mDistanceJudgement->start();
+		mFaceDisplay->setFace(3);
 		state = 830;
 	}
 	break;
 
 	//黄15進入
 	case 830:
-	mRunStraightAction->straight(14,12);
+	mRunStraightAction->straight(13,12);
+	mFaceDisplay->show();
 	if(mDistanceJudgement->isDistanceOut()){
 		mRunParameter->setLineTraceSpeed(section2[SPEED]);
 		mRunParameter->setKP(section2[KP]);
@@ -1130,6 +1191,7 @@ void SectionControlTactics::execute()
 		mDistanceJudgement->stop();
         mDistanceJudgement->setDistance(15);
         mDistanceJudgement->start();
+		mFaceDisplay->setFace(5);
 		state = 840;
 	}
 	break;
@@ -1138,11 +1200,27 @@ void SectionControlTactics::execute()
 	//最後のストップ
 	case 840:
 	mLineTraceAction->start();
+	mFaceDisplay->show();
 	if(mEV3ColorSensor->isColor_YELLOW()){
-		//ev3_speaker_play_tone(NOTE_C5, 100);
-		state = 220;
+		////	ev3_speaker_play_tone(NOTE_C5, 100);
+		mDistanceJudgement->stop();
+		mDistanceJudgement->setDistance(12);
+		mDistanceJudgement->start();
+		mFaceDisplay->setFace(3);
+		state = 845;
 	}
 	break;
+
+	case 845:
+	mRunStraightAction->straight(12,12);
+	mFaceDisplay->show();
+	if(mDistanceJudgement->isDistanceOut())//mEV3SonarSensor->isDetected(13)
+		{
+			mLineTraceAction->stop();
+			cycle_set(500);	
+			state=999;
+		}
+		break;
 
 
 
@@ -1251,8 +1329,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointY() < -125) //175->110
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 40;
 		}
 		break;
@@ -1273,8 +1351,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointX() > 62) //110,92
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 50;
 		}
 		break;
@@ -1296,8 +1374,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointY() > -115) //143
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 60;
 		}
 		break;
@@ -1319,8 +1397,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointY() > -40) //y80
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 70;
 		}
 		break;
@@ -1342,8 +1420,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointX() >145 )
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 80;
 		}
 		break;
@@ -1365,8 +1443,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointX() > 165)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 90;
 		}
 		break;
@@ -1389,8 +1467,8 @@ void SectionControlTactics::execute()
 
 		if (mCalcCurrentLocation->getPointY() < -55)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 95;
 		}
 		break;
@@ -1413,8 +1491,8 @@ void SectionControlTactics::execute()
 
 		if (mCalcCurrentLocation->getPointY() < -100)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 110;
 		}
 		break;
@@ -1436,8 +1514,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointX() < 155)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 120;
 		}
 		break;
@@ -1459,8 +1537,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointX() < 5) //85
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 130;
 		}
 		break;
@@ -1482,8 +1560,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointY() < -145) //Y68
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 140;
 		}
 		break;
@@ -1505,8 +1583,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointY() < -223)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 150;
 		}
 		break;
@@ -1528,8 +1606,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointY() < -263)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 160;
 		}
 		break;
@@ -1551,8 +1629,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointX() > 40)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 170;
 		}
 		break;
@@ -1576,8 +1654,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointX() > 45)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 211;
 		}
 		break;
@@ -1605,8 +1683,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointY() > 220)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state = 190;
 		}
 		break;
@@ -1628,8 +1706,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointY() > 248)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state++;
 		}
 		break;
@@ -1651,8 +1729,8 @@ void SectionControlTactics::execute()
 		mLineTraceAction->start();
 		if (mCalcCurrentLocation->getPointX() < 155)
 		{
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_C5, 100);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_C5, 100);
 			state++;
 		}
 		break;
@@ -1668,8 +1746,8 @@ void SectionControlTactics::execute()
 	case 212:
 		if (mTimerJudgement->isTimedOut())
 		{ //タイムアウト
-			ev3_speaker_set_volume(50);
-			//ev3_speaker_play_tone(NOTE_DS6, 400);
+			//ev3_speaker_set_volume(50);
+			////	ev3_speaker_play_tone(NOTE_DS6, 400);
 			mTimerJudgement->stop();
 			state = 220;
 		}
@@ -1678,10 +1756,28 @@ void SectionControlTactics::execute()
 	case 220:
 		mLineTraceAction->stop();
 		flag = false;
-		break;
+	break;
+
+	case 7000:
+			if(cycle_start())
+			{
+				mMusic->load("/ev3rt/res/kakekko1.wav");
+        		mMusic->play(15, SOUND_MANUAL_STOP);
+				state = 21;
+			}
+			//state = 7005;
+	break;
+
+	case 999:
+		mLineTraceAction->stop();
+		flag = false;
+	break;
+
 	default:
 		break;
 	}
+
+	
 }
 
 bool SectionControlTactics::isFinished()

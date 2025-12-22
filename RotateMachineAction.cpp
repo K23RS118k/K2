@@ -34,7 +34,7 @@ void RotateMachineAction::start()
 		mRearMotor->setSpeed(power, -power);
 		if (currentAngle >= targetAngle)
 		{
-			ev3_speaker_play_tone(NOTE_C6, 200);
+			//ev3_speaker_play_tone(NOTE_C6, 200);
 			flag = true;
 		}
 		break;
@@ -48,7 +48,7 @@ void RotateMachineAction::start()
 		mRearMotor->setSpeed(-power, power);
 		if (currentAngle <= targetAngle)
 		{
-			ev3_speaker_play_tone(NOTE_C6, 200);
+			//ev3_speaker_play_tone(NOTE_C6, 200);
 			flag = true;
 		}
 		break;

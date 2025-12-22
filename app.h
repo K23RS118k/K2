@@ -32,11 +32,11 @@ extern "C"
     extern void main_task(intptr_t exinf);
     extern void run_task(intptr_t exinf);
     extern void calibration_task(intptr_t exinf);
-    extern void camera_task(intptr_t exinf);
+    // extern void camera_task(intptr_t exinf);
 
     extern void ev3_cyc_run(intptr_t exinf);
     extern void ev3_cyc_calibration(intptr_t exinf);
-    extern void ev3_cyc_camera(intptr_t exinf);
+    // extern void ev3_cyc_camera(intptr_t exinf);
 
 #endif /* TOPPERS_MACRO_ONLY */
 

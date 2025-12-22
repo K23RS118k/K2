@@ -330,78 +330,6 @@ void main_task(intptr_t unused)
 	ext_tsk();
 }
 
-void camera_task(intptr_t exinf)
-{
-	/*
-	switch (camera_state)
-	{
-	case 10:
-		char buf[20];
-		ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
-		sprintf(buf, "camera_task");
-		ev3_lcd_draw_string(buf, 0, CALIB_FONT_HEIGHT * 1);
-		break;
-	case 11:
-		camera_state = 0;
-		wup_tsk(MAIN_TASK);
-		break;
-	}
-	*/
-	switch (camera_state)
-	{
-	case 0:
-		//	IPCommunication::setStartFlag(); //走行開始状態を送信中
-		if (gIPCommunication->setFlag('s'))
-		{
-			camera_state = 1;
-			slp_tsk(); //タスク終了まで待機
-		}
-		break;
-	case 1:
-		if (gSectionControlTactics->isFinished()) //スピード競技終了まで待機
-		{
-			camera_state++;
-		}
-		break;
-	case 2:
-		//IPCommunication::setRequestFlag(); //ブロックビンゴ前の直線で送受信(１回目)
-		if (gIPCommunication->setFlag('r'))
-		{
-			camera_state++;
-		}
-		break;
-	case 3:
-		//IPCommunication::setInfo(); //画像認識結果の情報をセット中(前半)
-		if (gIPCommunication->recieveData())
-		{
-			gIPCommunication->setFlag('l');
-			gIPCommunication->decode();
-			camera_state++;
-		}
-		break;
-	case 4:
-		//IPCommunication::setRequestFlag(); //ブロックビンゴ前の直線で送受信(２回目)
-		if (gIPCommunication->setFlag('r'))
-		{
-			camera_state++;
-		}
-		break;
-	case 5:
-		//IPCommunication::setInfo(); //画像認識結果の情報をセット中(後半)
-		if (gIPCommunication->recieveData())
-		{
-			gIPCommunication->setFlag('l');
-			gIPCommunication->decode();
-			camera_state++;
-		}
-		break;
-	case 6:
-		//カメラタスク周期ハンドラ終了
-		//ev3_stp_cyc(EV3_CYC_CAMERA);
-		break;
-	}
-	ext_tsk();
-}
 /**
 * キャリブレーションタスク
 */
@@ -443,7 +371,7 @@ void calibration_task(intptr_t exinf)
 * ランタスク
 */
 // 
-static int state = 0; // 5 or 12
+static int state = 0; // 5 or 12 11
 
 void run_task(intptr_t exinf)
 {
@@ -466,7 +394,14 @@ void run_task(intptr_t exinf)
 				// ev3_memfile_load("/ev3rt/res/kakekko3.wav", &memfile); //SDカード内の"test.wav"をメモリファイルとしてロード
 				// ev3_speaker_set_volume(15); //音量の設定
 				// ev3_speaker_play_file(&memfile, SOUND_MANUAL_STOP); // 音声ファイルを再生
-                state = 1;
+				gArmControl->setPower(0);
+				if(gArmControl->getEncoder() == 0)
+				{
+					gArmControl->setPower(0);
+					gArmControl->setBrake(true);
+					gArmControl->resetEncoder();
+					state = 1;
+				}// アームブレーキON 
             break;
 
             case 1:
