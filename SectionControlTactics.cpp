@@ -1214,7 +1214,7 @@ void SectionControlTactics::execute()
 	case 845:
 	mRunStraightAction->straight(12,12);
 	mFaceDisplay->show();
-	if(mDistanceJudgement->isDistanceOut())//mEV3SonarSensor->isDetected(13)
+	if(mEV3SonarSensor->isDetected(5))//mEV3SonarSensor->isDetected(13)
 		{
 			mLineTraceAction->stop();
 			cycle_set(500);	
